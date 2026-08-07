@@ -43,6 +43,61 @@ export function Card({ className, children }: { className?: string; children: Re
   )
 }
 
+/** Label PIN room: kecil, jelas, tidak mendominasi. */
+export function PinBadge({ pin, className }: { pin: string; className?: string }) {
+  return (
+    <span
+      className={cn(
+        "bg-secondary text-secondary-foreground border-border/70 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold",
+        className,
+      )}
+    >
+      <span className="text-muted-foreground">PIN</span>
+      <span className="font-mono tracking-wider">{pin}</span>
+    </span>
+  )
+}
+
+/** Sisa voucher satu nomor: 3x pakai / 2x pakai tersisa / habis. */
+export function UsesBadge({
+  usesLeft,
+  total,
+  className,
+}: {
+  usesLeft: number
+  total: number
+  className?: string
+}) {
+  const done = usesLeft === 0
+  const low = usesLeft === 1
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-bold",
+        done
+          ? "bg-muted text-muted-foreground"
+          : low
+            ? "bg-accent text-accent-foreground"
+            : "bg-primary text-primary-foreground",
+        className,
+      )}
+    >
+      <span className="flex gap-0.5" aria-hidden="true">
+        {Array.from({ length: total }, (_, i) => (
+          <span
+            key={i}
+            className={cn(
+              "size-1.5 rounded-full",
+              i < usesLeft ? "bg-current" : "bg-current/30",
+            )}
+          />
+        ))}
+      </span>
+      {done ? "Habis terpakai" : usesLeft === total ? `${total}x pakai` : `${usesLeft}x pakai tersisa`}
+    </span>
+  )
+}
+
 export function Field({
   label,
   className,

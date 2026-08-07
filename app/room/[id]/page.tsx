@@ -3,11 +3,12 @@
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { ArrowLeft, ClipboardPaste, Copy, Trash2 } from "lucide-react"
-import { AppHeader, Card, Field, Modal, useToast } from "@/components/app-ui"
+import { ArrowLeft, ClipboardPaste, Copy, Pencil, Trash2 } from "lucide-react"
+import { AppHeader, Card, Field, Modal, PinBadge, UsesBadge, useToast } from "@/components/app-ui"
 import { Button } from "@/components/ui/button"
 import {
   ROOMS,
+  USES_PER_NUMBER,
   clearSlot,
   copyText,
   fillEmptySlots,
@@ -15,11 +16,15 @@ import {
   isRoomFinished,
   markUsed,
   parseNumbers,
+  remainingUses,
   resetRoom,
+  roomPin,
+  setRoomPin,
   setSlotNumber,
   unusedNumbers,
   useAppData,
   usedCount,
+  usesLabel,
 } from "@/lib/store"
 
 export default function RoomPage() {
@@ -35,6 +40,9 @@ export default function RoomPage() {
 
   const [useIndex, setUseIndex] = useState<number | null>(null)
   const [buyer, setBuyer] = useState("")
+
+  const [pinOpen, setPinOpen] = useState(false)
+  const [pinDraft, setPinDraft] = useState("")
 
   const [doneDismissed, setDoneDismissed] = useState(false)
 
@@ -67,6 +75,8 @@ export default function RoomPage() {
 
   const used = usedCount(slots)
   const unused = unusedNumbers(slots)
+  const vouchers = remainingUses(slots)
+  const pin = roomPin(data, room.id)
 
   function submitPaste() {
     const numbers = parseNumbers(pasteText)
@@ -97,10 +107,23 @@ export default function RoomPage() {
 
   function confirmUse() {
     if (useIndex === null) return
+    const before = slots![useIndex].usesLeft
     markUsed(room!.id, useIndex, buyer)
     setUseIndex(null)
     setBuyer("")
-    toast("Nomor ditandai terpakai")
+    const left = before - 1
+    toast(left > 0 ? `Terpakai · sisa ${left}x` : "Nomor habis terpakai")
+  }
+
+  function savePin() {
+    const clean = pinDraft.replace(/\s+/g, "")
+    if (!clean) {
+      toast("PIN tidak boleh kosong")
+      return
+    }
+    setRoomPin(room!.id, clean)
+    setPinOpen(false)
+    toast("PIN disimpan")
   }
 
   function startNewRound() {
@@ -113,7 +136,7 @@ export default function RoomPage() {
     <main>
       <AppHeader
         title={room.name}
-        subtitle={`${used}/${slots.length} terpakai · ${unused.length} siap`}
+        subtitle={`${used}/${slots.length} nomor habis · ${vouchers} voucher tersisa`}
         left={
           <Link href="/" aria-label="Kembali" className="text-muted-foreground -ml-2 p-2">
             <ArrowLeft className="size-6" />
@@ -122,6 +145,21 @@ export default function RoomPage() {
       />
 
       <div className="space-y-3 px-4">
+        <div className="flex items-center gap-2 px-1">
+          <PinBadge pin={pin} />
+          <button
+            type="button"
+            onClick={() => {
+              setPinDraft(pin)
+              setPinOpen(true)
+            }}
+            className="text-muted-foreground inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold underline-offset-2 hover:underline"
+          >
+            <Pencil className="size-3.5" />
+            Ubah PIN
+          </button>
+        </div>
+
         <div className="flex gap-2">
           <Button onClick={() => setPasteOpen(true)} className="h-12 flex-1 text-base">
             <ClipboardPaste className="size-5" />
@@ -167,28 +205,34 @@ export default function RoomPage() {
                         }}
                       />
                     )}
-                    <p className="text-muted-foreground mt-1 text-xs">
-                      {slot.used
-                        ? `Terpakai · ${slot.usedAt ? formatTime(slot.usedAt) : ""}${
-                            slot.buyer ? ` · ${slot.buyer}` : ""
-                          }`
-                        : slot.number
-                          ? "Belum terpakai"
-                          : "Slot kosong"}
+
+                    {slot.number ? (
+                      <div className="mt-2">
+                        <UsesBadge usesLeft={slot.usesLeft} total={USES_PER_NUMBER} />
+                      </div>
+                    ) : null}
+
+                    <p className="text-muted-foreground mt-1.5 text-xs">
+                      {slot.number
+                        ? slot.usedAt
+                          ? `Terakhir dipakai ${formatTime(slot.usedAt)}${slot.buyer ? ` · ${slot.buyer}` : ""}`
+                          : "Belum pernah dipakai"
+                        : "Slot kosong"}
                     </p>
                   </div>
                 </div>
 
-                {slot.number && !slot.used ? (
+                {slot.number ? (
                   <div className="mt-3 flex gap-2">
                     <Button
+                      disabled={slot.usesLeft === 0}
                       onClick={() => {
                         setUseIndex(i)
                         setBuyer("")
                       }}
                       className="h-12 flex-1 text-base"
                     >
-                      Pakai
+                      {slot.usesLeft === 0 ? "Habis" : "Pakai"}
                     </Button>
                     <Button
                       variant="outline"
@@ -216,7 +260,8 @@ export default function RoomPage() {
         title="Paste 3 nomor"
       >
         <p className="text-muted-foreground mb-2 text-sm">
-          Pisahkan dengan baris baru, spasi, atau koma. Harus tepat 3 nomor.
+          Pisahkan dengan baris baru, spasi, atau koma. Harus tepat 3 nomor. Tiap nomor dapat{" "}
+          {USES_PER_NUMBER}x pakai.
         </p>
         <textarea
           value={pasteText}
@@ -241,9 +286,12 @@ export default function RoomPage() {
       </Modal>
 
       {/* Pakai */}
-      <Modal open={useIndex !== null} onClose={() => setUseIndex(null)} title="Tandai nomor terpakai">
-        <p className="font-mono mb-3 text-lg font-semibold">
+      <Modal open={useIndex !== null} onClose={() => setUseIndex(null)} title="Pakai 1 voucher">
+        <p className="font-mono mb-1 text-lg font-semibold">
           {useIndex !== null ? slots[useIndex].number : ""}
+        </p>
+        <p className="text-muted-foreground mb-3 text-sm">
+          {useIndex !== null ? usesLabel(slots[useIndex]) : ""} · PIN {pin}
         </p>
         <Field
           label="Nama pembeli (opsional)"
@@ -256,6 +304,22 @@ export default function RoomPage() {
         </Button>
       </Modal>
 
+      {/* Ubah PIN */}
+      <Modal open={pinOpen} onClose={() => setPinOpen(false)} title={`PIN ${room.name}`}>
+        <Field
+          label="PIN room"
+          value={pinDraft}
+          onChange={(e) => setPinDraft(e.target.value)}
+          inputMode="numeric"
+          autoFocus
+          placeholder="111111"
+          className="font-mono tracking-widest"
+        />
+        <Button onClick={savePin} className="mt-3 h-12 w-full text-base">
+          Simpan PIN
+        </Button>
+      </Modal>
+
       {/* Room selesai */}
       <Modal
         open={finished && !doneDismissed}
@@ -263,7 +327,8 @@ export default function RoomPage() {
         title="Room selesai, masukkan 3 nomor baru."
       >
         <p className="text-muted-foreground mb-3 text-sm">
-          Semua 3 nomor di {room.name} sudah terpakai. Kosongkan room ini lalu isi 3 nomor baru.
+          Semua 3 nomor di {room.name} sudah habis {USES_PER_NUMBER}x pakai. Kosongkan room ini lalu isi 3
+          nomor baru.
         </p>
         <div className="flex flex-col gap-2">
           <Button onClick={startNewRound} className="h-12 w-full text-base">

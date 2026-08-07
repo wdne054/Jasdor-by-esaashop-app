@@ -1,9 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { AppHeader, Card, Modal, useToast } from "@/components/app-ui"
+import { AppHeader, Card, Field, Modal, useToast } from "@/components/app-ui"
 import { Button } from "@/components/ui/button"
-import { ROOMS, resetAll, useAppData, usedCount } from "@/lib/store"
+import {
+  ROOMS,
+  USES_PER_NUMBER,
+  remainingUses,
+  resetAll,
+  roomPin,
+  setRoomPin,
+  useAppData,
+  usedCount,
+} from "@/lib/store"
 
 export default function SettingsPage() {
   const data = useAppData()
@@ -11,11 +20,33 @@ export default function SettingsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const totalUsed = data ? ROOMS.reduce((n, r) => n + usedCount(data.rooms[r.id]), 0) : 0
+  const totalVouchers = data ? ROOMS.reduce((n, r) => n + remainingUses(data.rooms[r.id]), 0) : 0
 
   return (
     <main>
       <AppHeader title="Setelan" subtitle="Jasdor by Esaashop" />
       <div className="space-y-3 px-4">
+        <Card>
+          <p className="text-sm font-semibold">PIN tiap room</p>
+          <p className="text-muted-foreground mt-1 mb-3 text-sm">
+            PIN ini tampil di kartu room dan di halaman room. Reset room tidak mengubah PIN.
+          </p>
+          <ul className="space-y-2">
+            {ROOMS.map((room) => (
+              <li key={room.id} className="flex items-center gap-3">
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{room.name}</span>
+                <Field
+                  aria-label={`PIN ${room.name}`}
+                  inputMode="numeric"
+                  value={roomPin(data, room.id)}
+                  onChange={(e) => setRoomPin(room.id, e.target.value)}
+                  className="h-11 w-32 font-mono tracking-widest"
+                />
+              </li>
+            ))}
+          </ul>
+        </Card>
+
         <Card>
           <p className="text-sm font-semibold">Data tersimpan di HP ini</p>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -23,7 +54,8 @@ export default function SettingsPage() {
             login.
           </p>
           <p className="text-muted-foreground mt-2 text-xs">
-            {ROOMS.length} room · {totalUsed} nomor terpakai · {data?.history.length ?? 0} riwayat
+            {ROOMS.length} room · {USES_PER_NUMBER}x pakai per nomor · {totalVouchers} voucher tersisa ·{" "}
+            {totalUsed} nomor habis · {data?.history.length ?? 0} riwayat
           </p>
         </Card>
 

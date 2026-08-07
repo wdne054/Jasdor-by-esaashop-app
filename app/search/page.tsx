@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { AppHeader, Card, Field } from "@/components/app-ui"
-import { ROOMS, formatTime, useAppData } from "@/lib/store"
+import { ROOMS, USES_PER_NUMBER, formatTime, roomPin, useAppData, usesLabel } from "@/lib/store"
 
 export default function SearchPage() {
   const data = useAppData()
@@ -60,7 +60,8 @@ export default function SearchPage() {
                       <Card>
                         <p className="font-mono text-base font-semibold">{slot.number}</p>
                         <p className="text-muted-foreground text-xs">
-                          {room.name} · slot {index + 1} · {slot.used ? "terpakai" : "belum terpakai"}
+                          {room.name} · PIN {roomPin(data, room.id)} · slot {index + 1} ·{" "}
+                          {usesLabel(slot)}
                           {slot.buyer ? ` · ${slot.buyer}` : ""}
                         </p>
                       </Card>
@@ -84,7 +85,8 @@ export default function SearchPage() {
                     <Card>
                       <p className="font-mono text-base font-semibold">{h.number}</p>
                       <p className="text-muted-foreground text-xs">
-                        {h.roomName} · slot {h.slot} · {formatTime(h.at)}
+                        {h.roomName} · slot {h.slot} · pakai ke-{h.useNo}/{USES_PER_NUMBER} ·{" "}
+                        {formatTime(h.at)}
                         {h.buyer ? ` · ${h.buyer}` : ""}
                       </p>
                     </Card>

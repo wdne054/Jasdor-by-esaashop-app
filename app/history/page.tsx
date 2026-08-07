@@ -1,7 +1,7 @@
 "use client"
 
 import { AppHeader, Card } from "@/components/app-ui"
-import { formatTime, useAppData } from "@/lib/store"
+import { USES_PER_NUMBER, formatTime, useAppData } from "@/lib/store"
 
 export default function HistoryPage() {
   const data = useAppData()
@@ -10,7 +10,7 @@ export default function HistoryPage() {
 
   return (
     <main>
-      <AppHeader title="Riwayat" subtitle={`${data.history.length} nomor terpakai`} />
+      <AppHeader title="Riwayat" subtitle={`${data.history.length} voucher terpakai`} />
       <div className="px-4">
         {data.history.length === 0 ? (
           <Card>
@@ -28,7 +28,8 @@ export default function HistoryPage() {
                     <p className="text-muted-foreground text-xs">{formatTime(h.at)}</p>
                   </div>
                   <p className="text-muted-foreground mt-1 text-xs">
-                    {h.roomName} · slot {h.slot}
+                    {h.roomName} · slot {h.slot} · pakai ke-{h.useNo}/{USES_PER_NUMBER} · sisa{" "}
+                    {h.usesLeft}x
                     {h.buyer ? ` · ${h.buyer}` : ""}
                   </p>
                 </Card>
