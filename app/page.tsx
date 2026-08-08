@@ -64,7 +64,7 @@ export default function HomePage() {
       />
 
       {/* OVERLAY */}
-      <div className="fixed inset-0 -z-10 bg-[#fff7f2]/80" />
+      <div className="fixed inset-0 -z-10 bg-[#fff7f2]/35" />
 
       <div className="mx-auto min-h-screen max-w-md">
         {/* HEADER */}
