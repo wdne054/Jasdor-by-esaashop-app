@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ChevronRight, Copy } from "lucide-react"
+import { ChevronRight, Copy, Coffee } from "lucide-react"
 import { AppHeader, Card, PinBadge, useToast } from "@/components/app-ui"
 import { Button } from "@/components/ui/button"
 import {
@@ -57,7 +57,24 @@ export default function HomePage() {
             Copy unused
           </Button>
         </Card>
+<Link href="/baperan" className="block">
+  <Card className="flex items-center gap-3 active:translate-y-px">
+    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+      <Coffee className="size-5" />
+    </div>
 
+    <div className="min-w-0 flex-1">
+      <p className="font-serif text-lg leading-tight font-bold">
+        BAPERAN
+      </p>
+      <p className="text-muted-foreground mt-1 text-xs">
+        Unlimited nomor · 1x pakai · PIN masing-masing
+      </p>
+    </div>
+
+    <ChevronRight className="text-muted-foreground size-5" aria-hidden="true" />
+  </Card>
+</Link>
         <ul className="space-y-3">
           {ROOMS.map((room) => {
             const slots = data.rooms[room.id]
