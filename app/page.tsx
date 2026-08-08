@@ -54,17 +54,13 @@ export default function HomePage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      {/* BACKGROUND */}
-      <div
-        className="fixed inset-0 -z-20 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/jasdor-bg.jpg')",
-        }}
-      />
-
-      {/* OVERLAY */}
-      <div className="fixed inset-0 -z-10 bg-[#fff7f2]/35" />
+<main
+  className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed"
+  style={{
+    backgroundImage:
+      "linear-gradient(rgba(255,247,242,0.35), rgba(255,247,242,0.35)), url('/jasdor-bg.jpg')",
+  }}
+>
 
       <div className="mx-auto min-h-screen max-w-md">
         {/* HEADER */}
