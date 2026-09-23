@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import {
   USES_PER_NUMBER,
   addRoom,
+  removeRoom,
   clearSlot,
   copyText,
   getRooms,
@@ -100,6 +101,13 @@ const totalVouchers = rooms.reduce(
               <p className="text-sm text-[#927463]">
                 Semangat jasdor hari ini 🤎
               </p>
+              <Button
+  onClick={() => removeRoom(room.id)}
+  variant="outline"
+  className="h-8 rounded-lg border-[#e8d7cb] px-2 text-[11px] font-bold text-[#9a6b55]"
+>
+  Hapus
+</Button>
             </div>
           </div>
         </header>
