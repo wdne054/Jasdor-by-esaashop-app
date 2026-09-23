@@ -4,12 +4,14 @@ import Link from "next/link"
 import { ChevronRight, Coffee, Copy, Sparkles } from "lucide-react"
 import { AppHeader, Card, PinBadge, useToast } from "@/components/app-ui"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   ROOMS,
   USES_PER_NUMBER,
   copyText,
   remainingUses,
   roomPin,
+  setFinance,
   unusedNumbers,
   useAppData,
   usedCount,
@@ -18,7 +20,18 @@ import {
 export default function HomePage() {
   const data = useAppData()
   const { toast, ToastView } = useToast()
+const finance = data?.finance
 
+  const netProfit = finance
+    ? finance.income -
+      finance.otpCost -
+      finance.roomCost -
+      finance.expenses
+    : 0
+
+  function formatRupiah(value: number) {
+    return new Intl.NumberFormat("id-ID").format(value)
+  }
   if (!data) {
     return (
       <AppHeader
@@ -144,7 +157,90 @@ export default function HomePage() {
               <ChevronRight className="size-5 text-[#a8785a]" />
             </Card>
           </Link>
+{/* KEUANGAN */}
+<Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+  <div className="mb-4">
+    <h2 className="text-lg font-bold text-[#6f4932]">
+      💰 Keuangan
+    </h2>
+    <p className="text-xs text-[#8b6b57]">
+      Catat pemasukan dan pengeluaran
+    </p>
+  </div>
 
+  <div className="grid grid-cols-2 gap-3">
+    <div>
+      <label className="mb-1 block text-xs font-medium text-[#765542]">
+        Total Pemasukan
+      </label>
+      <Input
+        type="number"
+        min="0"
+        value={finance?.income ?? 0}
+        onChange={(e) =>
+          setFinance("income", Number(e.target.value))
+        }
+        placeholder="0"
+      />
+    </div>
+
+    <div>
+      <label className="mb-1 block text-xs font-medium text-[#765542]">
+        Modal OTP
+      </label>
+      <Input
+        type="number"
+        min="0"
+        value={finance?.otpCost ?? 0}
+        onChange={(e) =>
+          setFinance("otpCost", Number(e.target.value))
+        }
+        placeholder="0"
+      />
+    </div>
+
+    <div>
+      <label className="mb-1 block text-xs font-medium text-[#765542]">
+        Modal ROOM
+      </label>
+      <Input
+        type="number"
+        min="0"
+        value={finance?.roomCost ?? 0}
+        onChange={(e) =>
+          setFinance("roomCost", Number(e.target.value))
+        }
+        placeholder="0"
+      />
+    </div>
+
+    <div>
+      <label className="mb-1 block text-xs font-medium text-[#765542]">
+        Pengeluaran
+      </label>
+      <Input
+        type="number"
+        min="0"
+        value={finance?.expenses ?? 0}
+        onChange={(e) =>
+          setFinance("expenses", Number(e.target.value))
+        }
+        placeholder="0"
+      />
+    </div>
+  </div>
+
+  <div className="mt-4 rounded-2xl bg-[#f8eee7] p-4 text-center">
+    <p className="text-xs font-medium text-[#8b6b57]">
+      UNTUNG BERSIH
+    </p>
+    <p className="mt-1 text-2xl font-bold text-[#6f4932]">
+      Rp {formatRupiah(netProfit)}
+    </p>
+  </div>
+</Card>
+
+{/* ROOM TITLE */}
           {/* ROOM TITLE */}
           <div className="px-1 pt-1">
             <p className="font-serif text-xl font-bold text-[#5d3d2b]">
