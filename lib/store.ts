@@ -101,19 +101,26 @@ function clampUses(n: unknown, fallback: number) {
 
 /** Guarantees exactly the 5 fixed rooms with exactly 3 slots each. */
 function normalize(raw: unknown): AppData {
+function normalize(raw: unknown): AppData {
   const data = initialData()
   if (!raw || typeof raw !== "object") return data
   const input = raw as Partial<AppData>
 
   for (const r of ROOMS) {
     const slots = input.rooms?.[r.id]
+
     if (Array.isArray(slots)) {
       for (let i = 0; i < SLOTS_PER_ROOM; i++) {
         const s = slots[i] as Partial<Slot> | undefined
         if (!s) continue
+
         const number = typeof s.number === "string" ? s.number : ""
-        // Data lama hanya punya `used`: anggap habis kalau used, penuh kalau belum.
-        const usesLeft = clampUses(s.usesLeft, s.used ? 0 : USES_PER_NUMBER)
+
+        const usesLeft = clampUses(
+          s.usesLeft,
+          s.used ? 0 : USES_PER_NUMBER,
+        )
+
         data.rooms[r.id][i] = {
           number,
           usesLeft,
@@ -125,12 +132,18 @@ function normalize(raw: unknown): AppData {
     }
 
     const pin = input.pins?.[r.id]
-    if (typeof pin === "string" && pin.trim()) data.pins[r.id] = pin.trim().slice(0, 12)
+
+    if (typeof pin === "string" && pin.trim()) {
+      data.pins[r.id] = pin.trim().slice(0, 12)
+    }
   }
 
   if (Array.isArray(input.history)) {
     data.history = input.history
-      .filter((h): h is HistoryEntry => Boolean(h) && typeof h.number === "string")
+      .filter(
+        (h): h is HistoryEntry =>
+          Boolean(h) && typeof h.number === "string",
+      )
       .map((h) => ({
         id: String(h.id ?? `${h.at}-${h.number}`),
         roomId: String(h.roomId ?? ""),
@@ -144,7 +157,6 @@ function normalize(raw: unknown): AppData {
       }))
       .sort((a, b) => b.at - a.at)
   }
-}
 
   const finance = input.finance
 
@@ -171,8 +183,7 @@ function normalize(raw: unknown): AppData {
 
   return data
 }
-
-let state: AppData | null = null
+  let state: AppData | null = null
 const listeners = new Set<() => void>()
 
 function read(): AppData {
