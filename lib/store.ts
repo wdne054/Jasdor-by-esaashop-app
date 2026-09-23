@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react"
 
 export const ROOMS = [
-  { id: "vs1", name: "VS Phone 1" },
-  { id: "vs2", name: "VS Phone 2" },
-  { id: "vs3", name: "VS Phone 3" },
-  { id: "vs4", name: "VS Phone 4" },
-  { id: "vmos", name: "VMOS" },
+  { id: "vs1", name: "ROOM 1" },
+  { id: "vs2", name: "ROOM 2" },
+  { id: "vs3", name: "ROOM 3" },
+  { id: "vs4", name: "ROOM 4" },
+  { id: "vmos", name: "ROOM 5" },
 ] as const
 
 export const SLOTS_PER_ROOM = 3
@@ -47,12 +47,19 @@ export type HistoryEntry = {
   /** sisa voucher setelah pemakaian ini */
   usesLeft: number
 }
-
+export type FinanceData = {
+  income: number
+  otpCost: number
+  roomCost: number
+  expenses: number
+}
 export type AppData = {
   rooms: Record<string, Slot[]>
   pins: Record<string, string>
   history: HistoryEntry[]
+finance: FinanceData
 }
+
 
 const STORAGE_KEY = "jasdor.v1"
 
@@ -73,7 +80,18 @@ function defaultPins(): Record<string, string> {
 export function initialData(): AppData {
   const rooms: Record<string, Slot[]> = {}
   for (const r of ROOMS) rooms[r.id] = emptyRoom()
-  return { rooms, pins: defaultPins(), history: [] }
+
+  return {
+    rooms,
+    pins: defaultPins(),
+    history: [],
+    finance: {
+      income: 0,
+      otpCost: 0,
+      roomCost: 0,
+      expenses: 0,
+    },
+  }
 }
 
 function clampUses(n: unknown, fallback: number) {
@@ -125,6 +143,30 @@ function normalize(raw: unknown): AppData {
         usesLeft: clampUses(h.usesLeft, 0),
       }))
       .sort((a, b) => b.at - a.at)
+  }
+}
+
+  const finance = input.finance
+
+  if (finance && typeof finance === "object") {
+    data.finance = {
+      income:
+        typeof finance.income === "number" && Number.isFinite(finance.income)
+          ? finance.income
+          : 0,
+      otpCost:
+        typeof finance.otpCost === "number" && Number.isFinite(finance.otpCost)
+          ? finance.otpCost
+          : 0,
+      roomCost:
+        typeof finance.roomCost === "number" && Number.isFinite(finance.roomCost)
+          ? finance.roomCost
+          : 0,
+      expenses:
+        typeof finance.expenses === "number" && Number.isFinite(finance.expenses)
+          ? finance.expenses
+          : 0,
+    }
   }
 
   return data
@@ -194,7 +236,14 @@ export function setRoomPin(roomId: string, pin: string) {
     d.pins[roomId] = clean || DEFAULT_PINS[roomId]
   })
 }
-
+export function setFinance(
+  field: "income" | "otpCost" | "roomCost" | "expenses",
+  value: number
+) {
+  update((d) => {
+    d.finance[field] = Number.isFinite(value) && value >= 0 ? value : 0
+  })
+      }
 export function setSlotNumber(roomId: string, index: number, number: string) {
   update((d) => {
     const slot = d.rooms[roomId]?.[index]
