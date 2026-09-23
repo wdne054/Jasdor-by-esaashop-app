@@ -23,11 +23,22 @@ export const DEFAULT_PINS: Record<string, string> = {
   vmos: "555555",
 }
 
+export type VoucherType = "VC 35" | "VC 50" | "VC 70"
+
+export const VOUCHER_TYPES: VoucherType[] = [
+  "VC 35",
+  "VC 50",
+  "VC 70",
+]
+
 export type Slot = {
   number: string
-  /** true hanya kalau usesLeft sudah 0 */
+  /** true kalau semua voucher sudah dipakai */
   used: boolean
+  /** jumlah voucher yang masih tersedia */
   usesLeft: number
+  /** status masing-masing voucher */
+  vouchers: Record<VoucherType, boolean>
   /** pembeli terakhir */
   buyer: string
   /** waktu pemakaian terakhir */
@@ -71,7 +82,18 @@ export type AppData = {
 const STORAGE_KEY = "jasdor.v1"
 
 function emptySlot(): Slot {
-  return { number: "", used: false, usesLeft: USES_PER_NUMBER, buyer: "", usedAt: null }
+  return {
+    number: "",
+    used: false,
+    usesLeft: USES_PER_NUMBER,
+    vouchers: {
+      "VC 35": false,
+      "VC 50": false,
+      "VC 70": false,
+    },
+    buyer: "",
+    usedAt: null,
+  }
 }
 
 function emptyRoom(): Slot[] {
@@ -163,18 +185,36 @@ function normalize(raw: unknown): AppData {
 
         const number = typeof s.number === "string" ? s.number : ""
 
-        const usesLeft = clampUses(
-          s.usesLeft,
-          s.used ? 0 : USES_PER_NUMBER,
-        )
+const oldUsesLeft = clampUses(
+  s.usesLeft,
+  s.used ? 0 : USES_PER_NUMBER,
+)
 
-        data.rooms[roomId][i] = {
-          number,
-          usesLeft,
-          used: Boolean(number) && usesLeft === 0,
-          buyer: typeof s.buyer === "string" ? s.buyer : "",
-          usedAt: typeof s.usedAt === "number" ? s.usedAt : null,
-        }
+const vouchers =
+  s.vouchers && typeof s.vouchers === "object"
+    ? {
+        "VC 35": Boolean(s.vouchers["VC 35"]),
+        "VC 50": Boolean(s.vouchers["VC 50"]),
+        "VC 70": Boolean(s.vouchers["VC 70"]),
+      }
+    : {
+        "VC 35": oldUsesLeft <= 2,
+        "VC 50": oldUsesLeft <= 1,
+        "VC 70": oldUsesLeft <= 0,
+      }
+
+const usesLeft = VOUCHER_TYPES.filter(
+  (type) => !vouchers[type],
+).length
+
+data.rooms[roomId][i] = {
+  number,
+  usesLeft,
+  used: Boolean(number) && usesLeft === 0,
+  vouchers,
+  buyer: typeof s.buyer === "string" ? s.buyer : "",
+  usedAt: typeof s.usedAt === "number" ? s.usedAt : null,
+}
       }
     }
 
@@ -382,7 +422,27 @@ export function markUsed(roomId: string, index: number, buyer: string) {
     })
   })
 }
+export function toggleVoucher(
+  roomId: string,
+  index: number,
+  voucherType: VoucherType,
+) {
+  update((d) => {
+    const slot = d.rooms[roomId]?.[index]
 
+    if (!slot || !slot.number) return
+
+    const currentlyChecked = slot.vouchers[voucherType]
+
+    slot.vouchers[voucherType] = !currentlyChecked
+
+    slot.usesLeft = VOUCHER_TYPES.filter(
+      (type) => !slot.vouchers[type],
+    ).length
+
+    slot.used = slot.usesLeft === 0
+  })
+}
 export function parseNumbers(input: string): string[] {
   return input
     .split(/[\s,;]+/)
