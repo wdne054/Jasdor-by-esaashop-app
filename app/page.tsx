@@ -191,7 +191,7 @@ const totalVouchers = rooms.reduce(
       <input
         type="number"
         min="0"
-        value={finance?.income ?? 0}
+        value={finance?.income || ""}
         onChange={(e) => setFinance("income", Number(e.target.value))}
         placeholder="0"
         className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
@@ -205,7 +205,7 @@ const totalVouchers = rooms.reduce(
       <input
         type="number"
         min="0"
-        value={finance?.otpCost ?? 0}
+        value={finance?.otpCost || ""}
         onChange={(e) => setFinance("otpCost", Number(e.target.value))}
         placeholder="0"
         className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
@@ -219,7 +219,7 @@ const totalVouchers = rooms.reduce(
       <input
         type="number"
         min="0"
-        value={finance?.roomCost ?? 0}
+        value={finance?.otpCost || ""}
         onChange={(e) => setFinance("roomCost", Number(e.target.value))}
         placeholder="0"
         className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
@@ -233,7 +233,7 @@ const totalVouchers = rooms.reduce(
       <input
         type="number"
         min="0"
-        value={finance?.expenses ?? 0}
+        value={finance?.expenses || ""}
         onChange={(e) => setFinance("expenses", Number(e.target.value))}
         placeholder="0"
         className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
