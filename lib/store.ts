@@ -101,7 +101,6 @@ function clampUses(n: unknown, fallback: number) {
 
 /** Guarantees exactly the 5 fixed rooms with exactly 3 slots each. */
 function normalize(raw: unknown): AppData {
-function normalize(raw: unknown): AppData {
   const data = initialData()
   if (!raw || typeof raw !== "object") return data
   const input = raw as Partial<AppData>
