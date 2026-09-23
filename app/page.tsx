@@ -5,15 +5,15 @@ import { ChevronRight, Coffee, Copy, Sparkles } from "lucide-react"
 import { AppHeader, Card, PinBadge, useToast } from "@/components/app-ui"
 import { Button } from "@/components/ui/button"
 import {
-  ROOMS,
   USES_PER_NUMBER,
-  copyText,
-  remainingUses,
-  roomPin,
-  setFinance,
-  unusedNumbers,
-  useAppData,
-  usedCount,
+copyText,
+getRooms,
+remainingUses,
+roomPin,
+setFinance,
+unusedNumbers,
+useAppData,
+usedCount,
 } from "@/lib/store"
 
 export default function HomePage() {
@@ -40,19 +40,21 @@ const finance = data?.finance
     )
   }
 
-  const allUnused = ROOMS.flatMap((room) =>
-    unusedNumbers(data.rooms[room.id]),
-  )
+  const rooms = getRooms(data)
 
-  const totalUsed = ROOMS.reduce(
-    (total, room) => total + usedCount(data.rooms[room.id]),
-    0,
-  )
+const allUnused = rooms.flatMap((room) =>
+  unusedNumbers(data.rooms[room.id]),
+)
 
-  const totalVouchers = ROOMS.reduce(
-    (total, room) => total + remainingUses(data.rooms[room.id]),
-    0,
-  )
+const totalUsed = rooms.reduce(
+  (total, room) => total + usedCount(data.rooms[room.id]),
+  0,
+)
+
+const totalVouchers = rooms.reduce(
+  (total, room) => total + remainingUses(data.rooms[room.id]),
+  0,
+)
 
   async function copyAll() {
     if (allUnused.length === 0) {
@@ -239,7 +241,7 @@ const finance = data?.finance
 
           {/* ROOMS */}
           <ul className="space-y-3">
-            {ROOMS.map((room) => {
+            {rooms.map((room) => {
               const slots = data.rooms[room.id]
               const used = usedCount(slots)
               const done = used === slots.length
