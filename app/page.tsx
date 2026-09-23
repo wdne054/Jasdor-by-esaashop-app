@@ -253,71 +253,7 @@ const totalVouchers = rooms.reduce(
 
 {/* ROOM TITLE */}
 
-          {/* ROOMS */}
-<div className="mb-3 flex items-center justify-between">
-  <h2 className="text-lg font-bold text-[#6f4932]">
-    📱 ROOMS
-  </h2>
-
-  <Button
-    onClick={addRoom}
-    className="h-9 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
-  >
-    + Tambah ROOM
-  </Button>
-</div>
-
-<ul className="space-y-3">
-            {rooms.map((room) => {
-              const slots = data.rooms[room.id]
-              const used = usedCount(slots)
-              const done = used === slots.length
-              const remaining = remainingUses(slots)
-
-              return (
-                <li key={room.id}>
-                 <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
-                  <div className="mb-3 flex items-center justify-between gap-2">
-    <div>
-      <p className="font-serif text-lg font-bold text-[#5d3d2b]">
-        {room.name}
-      </p>
-      <PinBadge
-        pin={roomPin(data, room.id)}
-        className="mt-1 border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
-      />
-    </div>
-
-    <p className="text-xs font-bold text-[#927463]">
-      {remaining} voucher tersisa
-    </p>
-  </div>
-
-  <div className="space-y-2">
-    {slots.map((slot, index) => (
-      <div
-        key={index}
-        className="rounded-2xl border border-[#eadbd3] bg-[#fffaf7] p-3"
-      >
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="text-xs font-bold text-[#8b6b57]">
-            NOMOR {index + 1}
-          </span>
-
-          <span className="text-[11px] font-bold text-[#927463]">
-            {slot.number
-              ? `${slot.usesLeft}/${USES_PER_NUMBER} voucher`
-              : "Belum diisi"}
-          </span>
-        </div>
-
-        <div className="flex gap-2">
-        <div className="flex flex-wrap gap-2">
-  <input
-    type="text"
-    inputMode="numeric"
-    value={slot.number}
-    onChange={(e) =>
+          ) =>
       setSlotNumber(room.id, index, e.target.value)
     }
     placeholder="Masukkan nomor OTP"
@@ -444,30 +380,169 @@ const totalVouchers = rooms.reduce(
           toggleVoucher(room.id, index, voucherType)
         }
         disabled={!slot.number}
-        className={
-          "flex min-h-10 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition " +
-          (checked
-            ? "border-[#8b5e3c] bg-[#8b5e3c] text-white"
-            : "border-[#eadbd3] bg-white text-[#8b6b57]")
-        }
-      >
-        <span className="text-sm">
-          {checked ? "☑" : "☐"}
-        </span>
-        {voucherType}
-      </button>
+{/* ROOMS */}
+<div className="mb-3 flex items-center justify-between">
+  <h2 className="text-lg font-bold text-[#6f4932]">
+    📱 ROOMS
+  </h2>
+
+  <Button
+    type="button"
+    onClick={addRoom}
+    className="h-9 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+  >
+    + Tambah ROOM
+  </Button>
+</div>
+
+<ul className="space-y-3">
+  {rooms.map((room) => {
+    const slots = data.rooms[room.id]
+    const remaining = remainingUses(slots)
+
+    return (
+      <li key={room.id}>
+        <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div>
+              <p className="font-serif text-lg font-bold text-[#5d3d2b]">
+                {room.name}
+              </p>
+
+              <PinBadge
+                pin={roomPin(data, room.id)}
+                className="mt-1 border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
+              />
+            </div>
+
+            <p className="text-xs font-bold text-[#927463]">
+              {remaining} voucher tersisa
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            {slots.map((slot, index) => (
+              <div
+                key={index}
+                className="rounded-2xl border border-[#eadbd3] bg-[#fffaf7] p-3"
+              >
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-[#8b6b57]">
+                    NOMOR {index + 1}
+                  </span>
+
+                  <span className="text-[11px] font-bold text-[#927463]">
+                    {slot.number
+                      ? `${slot.usesLeft}/${USES_PER_NUMBER} voucher`
+                      : "Belum diisi"}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={slot.number}
+                    onChange={(e) =>
+                      setSlotNumber(room.id, index, e.target.value)
+                    }
+                    placeholder="Masukkan nomor OTP"
+                    disabled={slot.used}
+                    className="min-w-[180px] flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+                  />
+
+                  {slot.number && (
+                    <Button
+                      type="button"
+                      onClick={async () => {
+                        const ok = await copyText(slot.number)
+                        toast(
+                          ok
+                            ? "Nomor berhasil dicopy ☕"
+                            : "Gagal copy",
+                        )
+                      }}
+                      variant="outline"
+                      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+                    >
+                      <Copy className="mr-1 h-4 w-4" />
+                      Copy
+                    </Button>
+                  )}
+
+                  {slot.number && !slot.used && (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const next = window.prompt(
+                          "Edit nomor OTP",
+                          slot.number,
+                        )
+
+                        if (next !== null) {
+                          setSlotNumber(room.id, index, next)
+                        }
+                      }}
+                      variant="outline"
+                      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+                    >
+                      Edit
+                    </Button>
+                  )}
+
+                  {slot.number && (
+                    <Button
+                      type="button"
+                      onClick={() => clearSlot(room.id, index)}
+                      variant="outline"
+                      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
+                    >
+                      Hapus
+                    </Button>
+                  )}
+                </div>
+
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {VOUCHER_TYPES.map((voucherType) => {
+                    const checked = Boolean(
+                      slot.vouchers?.[voucherType],
+                    )
+
+                    return (
+                      <button
+                        key={voucherType}
+                        type="button"
+                        onClick={() =>
+                          toggleVoucher(
+                            room.id,
+                            index,
+                            voucherType,
+                          )
+                        }
+                        disabled={!slot.number}
+                        className={
+                          "flex min-h-10 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition " +
+                          (checked
+                            ? "border-[#8b5e3c] bg-[#8b5e3c] text-white"
+                            : "border-[#eadbd3] bg-white text-[#8b6b57]")
+                        }
+                      >
+                        <span className="text-sm">
+                          {checked ? "☑" : "☐"}
+                        </span>
+                        {voucherType}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </li>
     )
   })}
-</div>
-        </div>
-      </div>
-    ))}
-  </div>
-</Card>
-                </li>
-              )
-            })}
-          </ul>
+</ul>
 
           <p className="pt-2 text-center text-[11px] text-[#a1816f]">
             ☕ Jasdor by Esaashop · semangat cari cuan 🤎
