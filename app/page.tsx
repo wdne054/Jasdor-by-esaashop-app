@@ -267,8 +267,7 @@ const totalVouchers = rooms.reduce(
               return (
                 <li key={room.id}>
                  <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
-                 <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
-  <div className="mb-3 flex items-center justify-between gap-2">
+                  <div className="mb-3 flex items-center justify-between gap-2">
     <div>
       <p className="font-serif text-lg font-bold text-[#5d3d2b]">
         {room.name}
