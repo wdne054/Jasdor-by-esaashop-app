@@ -386,8 +386,21 @@ export function setSlotNumber(roomId: string, index: number, number: string) {
   update((d) => {
     const slot = d.rooms[roomId]?.[index]
     if (!slot || slot.used) return
-    slot.number = number.trim()
-    slot.usesLeft = USES_PER_NUMBER
+
+    const nextNumber = number.trim()
+
+    if (nextNumber !== slot.number) {
+      slot.number = nextNumber
+      slot.vouchers = {
+        "VC 35": false,
+        "VC 50": false,
+        "VC 70": false,
+      }
+      slot.usesLeft = USES_PER_NUMBER
+      slot.used = false
+      slot.buyer = ""
+      slot.usedAt = null
+    }
   })
 }
 
