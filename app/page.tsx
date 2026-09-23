@@ -276,21 +276,41 @@ const totalVouchers = rooms.reduce(
       <li key={room.id}>
         <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <div>
-              <p className="font-serif text-lg font-bold text-[#5d3d2b]">
-                {room.name}
-              </p>
+  <div className="min-w-0">
+    <p className="font-serif text-lg font-bold text-[#5d3d2b]">
+      {room.name}
+    </p>
 
-              <PinBadge
-                pin={roomPin(data, room.id)}
-                className="mt-1 border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
-              />
-            </div>
+    <PinBadge
+      pin={roomPin(data, room.id)}
+      className="mt-1 border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
+    />
+  </div>
 
-            <p className="text-xs font-bold text-[#927463]">
-              {remaining} voucher tersisa
-            </p>
-          </div>
+  <div className="flex shrink-0 items-center gap-2">
+    <p className="text-xs font-bold text-[#927463]">
+      {remaining} voucher
+    </p>
+
+    <Button
+      type="button"
+      onClick={() => {
+        const yakin = window.confirm(
+          `Hapus ${room.name}? Semua nomor di ROOM ini akan ikut terhapus.`
+        )
+
+        if (yakin) {
+          removeRoom(room.id)
+          toast(`${room.name} berhasil dihapus`)
+        }
+      }}
+      variant="outline"
+      className="h-9 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold text-[#a15f4a]"
+    >
+      Hapus
+    </Button>
+  </div>
+</div>
 
           <div className="space-y-2">
             {slots.map((slot, index) => (
