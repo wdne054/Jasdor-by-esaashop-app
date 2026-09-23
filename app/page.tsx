@@ -7,14 +7,17 @@ import { Button } from "@/components/ui/button"
 import {
   USES_PER_NUMBER,
   addRoom,
+  clearSlot,
   copyText,
-getRooms,
-remainingUses,
-roomPin,
-setFinance,
-unusedNumbers,
-useAppData,
-usedCount,
+  getRooms,
+  markUsed,
+  remainingUses,
+  roomPin,
+  setSlotNumber,
+  setFinance,
+  unusedNumbers,
+  useAppData,
+  usedCount,
 } from "@/lib/store"
 
 export default function HomePage() {
@@ -263,67 +266,100 @@ const totalVouchers = rooms.reduce(
 
               return (
                 <li key={room.id}>
-                  <Link href={`/room/${room.id}`} className="block">
-                    <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
-                      <div className="flex items-center gap-3">
-                        <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#f3ded2] text-xl">
-                          {done ? "☕" : "📱"}
-                        </div>
+                 <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+                 <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+  <div className="mb-3 flex items-center justify-between gap-2">
+    <div>
+      <p className="font-serif text-lg font-bold text-[#5d3d2b]">
+        {room.name}
+      </p>
+      <PinBadge
+        pin={roomPin(data, room.id)}
+        className="mt-1 border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
+      />
+    </div>
 
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="font-serif text-lg font-bold text-[#5d3d2b]">
-                              {room.name}
-                            </p>
+    <p className="text-xs font-bold text-[#927463]">
+      {remaining} voucher tersisa
+    </p>
+  </div>
 
-                            <p className="font-serif text-xl font-bold text-[#5d3d2b]">
-                              {used}/{slots.length}
-                            </p>
-                          </div>
+  <div className="space-y-2">
+    {slots.map((slot, index) => (
+      <div
+        key={index}
+        className="rounded-2xl border border-[#eadbd3] bg-[#fffaf7] p-3"
+      >
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="text-xs font-bold text-[#8b6b57]">
+            NOMOR {index + 1}
+          </span>
 
-                          <div className="mt-1">
-                            <PinBadge
-                              pin={roomPin(data, room.id)}
-                              className="border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
-                            />
-                          </div>
+          <span className="text-[11px] font-bold text-[#927463]">
+            {slot.number
+              ? `${slot.usesLeft}/${USES_PER_NUMBER} voucher`
+              : "Belum diisi"}
+          </span>
+        </div>
 
-                          <div className="mt-2 flex gap-1.5">
-                            {slots.map((slot, index) => (
-                              <span
-                                key={index}
-                                className="flex h-2 flex-1 gap-0.5 overflow-hidden rounded-full bg-[#eadbd3]"
-                              >
-                                {Array.from(
-                                  { length: USES_PER_NUMBER },
-                                  (_, useIndex) => (
-                                    <span
-                                      key={useIndex}
-                                      className={
-                                        "flex-1 rounded-full " +
-                                        (slot.number &&
-                                        useIndex < slot.usesLeft
-                                          ? "bg-[#b87856]"
-                                          : "bg-[#efd7ca]")
-                                      }
-                                    />
-                                  ),
-                                )}
-                              </span>
-                            ))}
-                          </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={slot.number}
+            onChange={(e) =>
+              setSlotNumber(room.id, index, e.target.value)
+            }
+            placeholder="Masukkan nomor OTP"
+            disabled={slot.used}
+            className="min-w-0 flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+          />
 
-                          <p className="mt-1.5 text-[11px] text-[#927463]">
-                            {done
-                              ? "☕ Room selesai"
-                              : `${remaining} voucher tersisa`}
-                          </p>
-                        </div>
+          {slot.number && !slot.used && (
+            <Button
+              onClick={() => markUsed(room.id, index, "")}
+              className="h-10 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+            >
+              Pakai
+            </Button>
+          )}
 
-                        <ChevronRight className="size-5 shrink-0 text-[#b28b75]" />
-                      </div>
-                    </Card>
-                  </Link>
+          {slot.number && (
+            <Button
+              onClick={() => clearSlot(room.id, index)}
+              variant="outline"
+              className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
+            >
+              Hapus
+            </Button>
+          )}
+        </div>
+
+        <div className="mt-3 flex gap-2">
+          {Array.from({ length: USES_PER_NUMBER }, (_, useIndex) => {
+            const checked =
+              Boolean(slot.number) &&
+              useIndex >= slot.usesLeft
+
+            return (
+              <div
+                key={useIndex}
+                className={
+                  "flex h-8 flex-1 items-center justify-center rounded-lg text-xs font-bold " +
+                  (checked
+                    ? "bg-[#b87856] text-white"
+                    : "bg-[#efd7ca] text-[#8b6b57]")
+                }
+              >
+                {checked ? "✓" : "○"} {useIndex + 1}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+</Card>
                 </li>
               )
             })}
