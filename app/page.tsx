@@ -5,7 +5,9 @@ import { ChevronRight, Coffee, Copy, Sparkles } from "lucide-react"
 import { AppHeader, Card, PinBadge, useToast } from "@/components/app-ui"
 import { Button } from "@/components/ui/button"
 import {
+import {
   USES_PER_NUMBER,
+  VOUCHER_TYPES,
   addRoom,
   removeRoom,
   clearSlot,
@@ -16,6 +18,7 @@ import {
   roomPin,
   setSlotNumber,
   setFinance,
+  toggleVoucher,
   unusedNumbers,
   useAppData,
   usedCount,
@@ -310,58 +313,153 @@ const totalVouchers = rooms.reduce(
         </div>
 
         <div className="flex gap-2">
-          <input
-            type="text"
-            inputMode="numeric"
-            value={slot.number}
-            onChange={(e) =>
-              setSlotNumber(room.id, index, e.target.value)
-            }
-            placeholder="Masukkan nomor OTP"
-            disabled={slot.used}
-            className="min-w-0 flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-          />
+        <div className="flex flex-wrap gap-2">
+  <input
+    type="text"
+    inputMode="numeric"
+    value={slot.number}
+    onChange={(e) =>
+      setSlotNumber(room.id, index, e.target.value)
+    }
+    placeholder="Masukkan nomor OTP"
+    disabled={slot.used}
+    className="min-w-[180px] flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+  />
 
-          {slot.number && !slot.used && (
-            <Button
-              onClick={() => markUsed(room.id, index, "")}
-              className="h-10 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
-            >
-              Pakai
-            </Button>
-          )}
+  {slot.number && (
+    <Button
+      type="button"
+      onClick={async () => {
+        const ok = await copyText(slot.number)
+        toast(ok ? "Nomor berhasil dicopy ☕" : "Gagal copy")
+      }}
+      variant="outline"
+      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+    >
+      <Copy className="mr-1 h-4 w-4" />
+      Copy
+    </Button>
+  )}
 
-          {slot.number && (
-            <Button
-              onClick={() => clearSlot(room.id, index)}
-              variant="outline"
-              className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
-            >
-              Hapus
-            </Button>
-          )}
-        </div>
+  {slot.number && !slot.used && (
+    <Button
+      type="button"
+      onClick={() => {
+        const next = window.prompt(
+          "Edit nomor OTP",
+          slot.number,
+        )
 
-        <div className="mt-3 flex gap-2">
-          {Array.from({ length: USES_PER_NUMBER }, (_, useIndex) => {
-            const checked =
-              Boolean(slot.number) &&
-              useIndex >= slot.usesLeft
+        if (next !== null) {
+          setSlotNumber(room.id, index, next)
+        }
+      }}
+      variant="outline"
+      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+    >
+      Edit
+    </Button>
+  )}
 
-            return (
-              <div
-                key={useIndex}
-                className={
-                  "flex h-8 flex-1 items-center justify-center rounded-lg text-xs font-bold " +
-                  (checked
-                    ? "bg-[#b87856] text-white"
-                    : "bg-[#efd7ca] text-[#8b6b57]")
-                }
-              >
-                {checked ? "✓" : "○"} {useIndex + 1}
-              </div>
+  {slot.number && (
+    <Button
+      type="button"
+      onClick={() => clearSlot(room.id, index)}
+      variant="outline"
+      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
+    >
+      Hapus
+    </Button>
+  )}
+</div>
+
+        <div className="flex gap-2">
+  <input
+    type="text"
+    inputMode="numeric"
+    value={slot.number}
+    onChange={(e) =>
+      setSlotNumber(room.id, index, e.target.value)
+    }
+    placeholder="Masukkan nomor OTP"
+    disabled={slot.used}
+    className="min-w-0 flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+  />
+
+  {slot.number && (
+    <Button
+      type="button"
+      onClick={async () => {
+        const ok = await copyText(slot.number)
+        toast(ok ? "Nomor berhasil dicopy ☕" : "Gagal copy")
+      }}
+      variant="outline"
+      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+    >
+      <Copy className="mr-1 h-4 w-4" />
+      Copy
+    </Button>
+  )}
+
+  {slot.number && !slot.used && (
+    <Button
+      type="button"
+      onClick={() => {
+        const next = window.prompt(
+          "Edit nomor OTP",
+          slot.number,
+        )
+
+        if (next !== null) {
+          setSlotNumber(room.id, index, next)
+        }
+      }}
+      variant="outline"
+      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+    >
+      Edit
+    </Button>
+  )}
+
+  {slot.number && (
+    <Button
+      type="button"
+      onClick={() => clearSlot(room.id, index)}
+      variant="outline"
+      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
+    >
+      Hapus
+    </Button>
+  )}
+</div>
             )
-          })}
+          <div className="mt-3 grid grid-cols-3 gap-2">
+  {VOUCHER_TYPES.map((voucherType) => {
+    const checked = Boolean(slot.vouchers?.[voucherType])
+
+    return (
+      <button
+        key={voucherType}
+        type="button"
+        onClick={() =>
+          toggleVoucher(room.id, index, voucherType)
+        }
+        disabled={!slot.number}
+        className={
+          "flex min-h-10 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition " +
+          (checked
+            ? "border-[#8b5e3c] bg-[#8b5e3c] text-white"
+            : "border-[#eadbd3] bg-white text-[#8b6b57]")
+        }
+      >
+        <span className="text-sm">
+          {checked ? "☑" : "☐"}
+        </span>
+        {voucherType}
+      </button>
+    )
+  })}
+</div>
         </div>
       </div>
     ))}
