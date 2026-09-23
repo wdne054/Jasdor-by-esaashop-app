@@ -15,6 +15,7 @@ import {
   markUsed,
   remainingUses,
   roomPin,
+  setRoomPin,
   setSlotNumber,
   setFinance,
   toggleVoucher,
@@ -281,10 +282,31 @@ const totalVouchers = rooms.reduce(
       {room.name}
     </p>
 
-    <PinBadge
-      pin={roomPin(data, room.id)}
-      className="mt-1 border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
-    />
+    <div className="mt-1 flex items-center gap-2">
+  <PinBadge
+    pin={roomPin(data, room.id)}
+    className="border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
+  />
+
+  <Button
+    type="button"
+    onClick={() => {
+      const next = window.prompt(
+        `PIN ${room.name}`,
+        roomPin(data, room.id),
+      )
+
+      if (next !== null) {
+        setRoomPin(room.id, next)
+        toast(`PIN ${room.name} berhasil disimpan`)
+      }
+    }}
+    variant="outline"
+    className="h-7 rounded-lg border-[#e8d7cb] px-2 text-[11px] font-bold"
+  >
+    Edit PIN
+  </Button>
+</div>
   </div>
 
   <div className="flex shrink-0 items-center gap-2">
