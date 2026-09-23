@@ -53,13 +53,20 @@ export type FinanceData = {
   roomCost: number
   expenses: number
 }
+
+export type RoomInfo = {
+  id: string
+  name: string
+}
+
 export type AppData = {
   rooms: Record<string, Slot[]>
   pins: Record<string, string>
+  roomOrder: string[]
+  roomNames: Record<string, string>
   history: HistoryEntry[]
-finance: FinanceData
+  finance: FinanceData
 }
-
 
 const STORAGE_KEY = "jasdor.v1"
 
@@ -79,11 +86,18 @@ function defaultPins(): Record<string, string> {
 
 export function initialData(): AppData {
   const rooms: Record<string, Slot[]> = {}
-  for (const r of ROOMS) rooms[r.id] = emptyRoom()
+  const roomNames: Record<string, string> = {}
+
+  for (const r of ROOMS) {
+    rooms[r.id] = emptyRoom()
+    roomNames[r.id] = r.name
+  }
 
   return {
     rooms,
     pins: defaultPins(),
+    roomOrder: ROOMS.map((r) => r.id),
+    roomNames,
     history: [],
     finance: {
       income: 0,
@@ -105,8 +119,42 @@ function normalize(raw: unknown): AppData {
   if (!raw || typeof raw !== "object") return data
   const input = raw as Partial<AppData>
 
+  const roomOrder = Array.isArray(input.roomOrder)
+    ? input.roomOrder.filter(
+        (id): id is string => typeof id === "string" && id.trim().length > 0,
+      )
+    : ROOMS.map((r) => r.id)
+
+  const roomNames =
+    input.roomNames && typeof input.roomNames === "object"
+      ? { ...input.roomNames }
+      : {}
+
   for (const r of ROOMS) {
-    const slots = input.rooms?.[r.id]
+    if (!roomOrder.includes(r.id)) {
+      roomOrder.push(r.id)
+    }
+
+    if (
+      typeof roomNames[r.id] !== "string" ||
+      !roomNames[r.id].trim()
+    ) {
+      roomNames[r.id] = r.name
+    }
+  }
+
+  data.roomOrder = [...new Set(roomOrder)]
+  data.roomNames = roomNames
+
+  for (const roomId of data.roomOrder) {
+    if (!data.rooms[roomId]) {
+      data.rooms[roomId] = emptyRoom()
+    }
+
+    if (!data.pins[roomId]) {
+      data.pins[roomId] = ""
+    }
+    const slots = input.rooms?.[roomId]
 
     if (Array.isArray(slots)) {
       for (let i = 0; i < SLOTS_PER_ROOM; i++) {
@@ -120,7 +168,7 @@ function normalize(raw: unknown): AppData {
           s.used ? 0 : USES_PER_NUMBER,
         )
 
-        data.rooms[r.id][i] = {
+        data.rooms[roomId][i] = {
           number,
           usesLeft,
           used: Boolean(number) && usesLeft === 0,
@@ -130,13 +178,21 @@ function normalize(raw: unknown): AppData {
       }
     }
 
-    const pin = input.pins?.[r.id]
+    const pin = input.pins?.[roomId]
 
     if (typeof pin === "string" && pin.trim()) {
-      data.pins[r.id] = pin.trim().slice(0, 12)
+      data.pins[roomId] = pin.trim().slice(0, 12)
     }
   }
-
+data.roomOrder = data.roomOrder.filter((id) => data.rooms[id])
+data.roomNames = Object.fromEntries(
+  data.roomOrder.map((id, index) => [
+    id,
+    typeof data.roomNames[id] === "string" && data.roomNames[id].trim()
+      ? data.roomNames[id]
+      : `ROOM ${index + 1}`,
+  ]),
+)
   if (Array.isArray(input.history)) {
     data.history = input.history
       .filter(
@@ -232,13 +288,45 @@ export function useAppData(): AppData | null {
 /* ---------- actions ---------- */
 
 export function roomName(roomId: string) {
-  return ROOMS.find((r) => r.id === roomId)?.name ?? roomId
+  return state?.roomNames?.[roomId] ?? ROOMS.find((r) => r.id === roomId)?.name ?? roomId
 }
+export function getRooms(data: AppData | null): RoomInfo[] {
+  if (!data) return []
 
+  return data.roomOrder.map((id, index) => ({
+    id,
+    name: data.roomNames?.[id] ?? `ROOM ${index + 1}`,
+  }))
+}
 export function roomPin(data: AppData | null, roomId: string) {
   return data?.pins?.[roomId] ?? DEFAULT_PINS[roomId] ?? ""
 }
+export function addRoom() {
+  update((d) => {
+    let number = d.roomOrder.length + 1
+    let id = `room-${number}`
 
+    while (d.rooms[id]) {
+      number += 1
+      id = `room-${number}`
+    }
+
+    d.roomOrder.push(id)
+    d.roomNames[id] = `ROOM ${number}`
+    d.rooms[id] = emptyRoom()
+    d.pins[id] = ""
+  })
+}
+export function removeRoom(roomId: string) {
+  update((d) => {
+    if (!d.roomOrder.includes(roomId)) return
+
+    d.roomOrder = d.roomOrder.filter((id) => id !== roomId)
+    delete d.rooms[roomId]
+    delete d.pins[roomId]
+    delete d.roomNames[roomId]
+  })
+      }
 export function setRoomPin(roomId: string, pin: string) {
   update((d) => {
     if (!d.rooms[roomId]) return
