@@ -243,8 +243,7 @@ const finance = data?.finance
     </p>
   </div>
 </Card>
-        placeholder="0"
-      />
+        
     </div>
 
     <div>
