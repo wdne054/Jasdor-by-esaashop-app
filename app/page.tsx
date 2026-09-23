@@ -6,7 +6,8 @@ import { AppHeader, Card, PinBadge, useToast } from "@/components/app-ui"
 import { Button } from "@/components/ui/button"
 import {
   USES_PER_NUMBER,
-copyText,
+  addRoom,
+  copyText,
 getRooms,
 remainingUses,
 roomPin,
@@ -240,7 +241,20 @@ const totalVouchers = rooms.reduce(
 {/* ROOM TITLE */}
 
           {/* ROOMS */}
-          <ul className="space-y-3">
+<div className="mb-3 flex items-center justify-between">
+  <h2 className="text-lg font-bold text-[#6f4932]">
+    📱 ROOMS
+  </h2>
+
+  <Button
+    onClick={addRoom}
+    className="h-9 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+  >
+    + Tambah ROOM
+  </Button>
+</div>
+
+<ul className="space-y-3">
             {rooms.map((room) => {
               const slots = data.rooms[room.id]
               const used = usedCount(slots)
