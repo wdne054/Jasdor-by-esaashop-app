@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="id" className="bg-background">
+    <html lang="id" className={`bg-background ${_nunito.className}`}>
       <body className="bg-background text-foreground font-sans antialiased">
         <div className="mx-auto min-h-dvh w-full max-w-md pb-24">{children}</div>
         <BottomNav />
