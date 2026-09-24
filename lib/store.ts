@@ -55,13 +55,17 @@ export type HistoryEntry = {
   voucher: VoucherType
   at: number
 }
-export type FinanceData = {
+export type DailyFinance = {
+  date: string
   income: number
+  roomBalance: number
   otpCost: number
-  roomCost: number
   expenses: number
 }
 
+export type FinanceData = {
+  days: DailyFinance[]
+}
 export type RoomInfo = {
   id: string
   name: string
@@ -119,14 +123,9 @@ export function initialData(): AppData {
     roomNames,
     history: [],
     finance: {
-      income: 0,
-      otpCost: 0,
-      roomCost: 0,
-      expenses: 0,
-    },
-  }
+  days: [],
+},
 }
-
 function clampUses(n: unknown, fallback: number) {
   const v = typeof n === "number" && Number.isFinite(n) ? Math.floor(n) : fallback
   return Math.min(USES_PER_NUMBER, Math.max(0, v))
@@ -252,26 +251,81 @@ data.roomNames = Object.fromEntries(
 
   const finance = input.finance
 
-  if (finance && typeof finance === "object") {
+if (finance && typeof finance === "object") {
+  const oldFinance = finance as {
+    income?: unknown
+    otpCost?: unknown
+    roomCost?: unknown
+    expenses?: unknown
+    days?: unknown
+  }
+
+  if (Array.isArray(oldFinance.days)) {
     data.finance = {
-      income:
-        typeof finance.income === "number" && Number.isFinite(finance.income)
-          ? finance.income
-          : 0,
-      otpCost:
-        typeof finance.otpCost === "number" && Number.isFinite(finance.otpCost)
-          ? finance.otpCost
-          : 0,
-      roomCost:
-        typeof finance.roomCost === "number" && Number.isFinite(finance.roomCost)
-          ? finance.roomCost
-          : 0,
-      expenses:
-        typeof finance.expenses === "number" && Number.isFinite(finance.expenses)
-          ? finance.expenses
-          : 0,
+      days: oldFinance.days
+        .filter(
+          (day): day is Record<string, unknown> =>
+            Boolean(day) && typeof day === "object",
+        )
+        .map((day) => ({
+          date:
+            typeof day.date === "string"
+              ? day.date
+              : new Date().toISOString().slice(0, 10),
+          income:
+            typeof day.income === "number" &&
+            Number.isFinite(day.income)
+              ? day.income
+              : 0,
+          roomBalance:
+            typeof day.roomBalance === "number" &&
+            Number.isFinite(day.roomBalance)
+              ? day.roomBalance
+              : 0,
+          otpCost:
+            typeof day.otpCost === "number" &&
+            Number.isFinite(day.otpCost)
+              ? day.otpCost
+              : 0,
+          expenses:
+            typeof day.expenses === "number" &&
+            Number.isFinite(day.expenses)
+              ? day.expenses
+              : 0,
+        })),
+    }
+  } else {
+    data.finance = {
+      days: [
+        {
+          date: new Date().toISOString().slice(0, 10),
+          income:
+            typeof oldFinance.income === "number" &&
+            Number.isFinite(oldFinance.income)
+              ? oldFinance.income
+              : 0,
+          roomBalance:
+            typeof oldFinance.roomCost === "number" &&
+            Number.isFinite(oldFinance.roomCost)
+              ? oldFinance.roomCost
+              : 0,
+          otpCost:
+            typeof oldFinance.otpCost === "number" &&
+            Number.isFinite(oldFinance.otpCost)
+              ? oldFinance.otpCost
+              : 0,
+          expenses:
+            typeof oldFinance.expenses === "number" &&
+            Number.isFinite(oldFinance.expenses)
+              ? oldFinance.expenses
+              : 0,
+        },
+      ],
     }
   }
+}
+
+return data
 
   return data
 }
@@ -371,14 +425,30 @@ export function setRoomPin(roomId: string, pin: string) {
     d.pins[roomId] = clean || DEFAULT_PINS[roomId]
   })
 }
-export function setFinance(
-  field: "income" | "otpCost" | "roomCost" | "expenses",
-  value: number
+export function setDailyFinance(
+  date: string,
+  field: "income" | "roomBalance" | "otpCost" | "expenses",
+  value: number,
 ) {
   update((d) => {
-    d.finance[field] = Number.isFinite(value) && value >= 0 ? value : 0
-  })
+    let day = d.finance.days.find((item) => item.date === date)
+
+    if (!day) {
+      day = {
+        date,
+        income: 0,
+        roomBalance: 0,
+        otpCost: 0,
+        expenses: 0,
       }
+
+      d.finance.days.push(day)
+    }
+
+    day[field] =
+      Number.isFinite(value) && value >= 0 ? value : 0
+  })
+}
 export function setSlotNumber(roomId: string, index: number, number: string) {
   update((d) => {
     const slot = d.rooms[roomId]?.[index]
