@@ -126,6 +126,7 @@ export function initialData(): AppData {
   days: [],
 },
 }
+}
 function clampUses(n: unknown, fallback: number) {
   const v = typeof n === "number" && Number.isFinite(n) ? Math.floor(n) : fallback
   return Math.min(USES_PER_NUMBER, Math.max(0, v))
