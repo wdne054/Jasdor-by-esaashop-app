@@ -17,7 +17,7 @@ import {
   roomPin,
   setRoomPin,
   setSlotNumber,
-  setFinance,
+  setDailyFinance,,
   toggleVoucher,
   unusedNumbers,
   useAppData,
@@ -29,12 +29,17 @@ export default function HomePage() {
   const { toast, ToastView } = useToast()
 const finance = data?.finance
 
-  const netProfit = finance
-    ? finance.income -
-      finance.otpCost -
-      finance.roomCost -
-      finance.expenses
-    : 0
+const today = new Date().toLocaleDateString("en-CA")
+
+const todayFinance = finance?.days.find(
+  (day) => day.date === today,
+)
+
+const netProfit = todayFinance
+  ? todayFinance.income -
+    todayFinance.otpCost -
+    todayFinance.expenses
+  : 0
 
   function formatRupiah(value: number) {
     return new Intl.NumberFormat("id-ID").format(value)
@@ -180,21 +185,55 @@ const totalVouchers = rooms.reduce(
       💰 Keuangan
     </h2>
     <p className="text-xs text-[#8b6b57]">
-      Catat pemasukan dan pengeluaran
+      Catatan keuangan hari ini
+    </p>
+  </div>
+
+  <div className="mb-4 rounded-2xl bg-[#f8eee7] p-3 text-center">
+    <p className="text-xs font-semibold text-[#8b6b57]">
+      📅 {new Intl.DateTimeFormat("id-ID", {
+        dateStyle: "full",
+      }).format(new Date())}
     </p>
   </div>
 
   <div className="grid grid-cols-2 gap-3">
     <div>
       <label className="mb-1 block text-xs font-medium text-[#765542]">
-        Total Pemasukan
+        Saldo Awal ROOM
       </label>
       <input
         type="number"
         min="0"
-        value={finance?.income || ""}
-        onChange={(e) => setFinance("income", Number(e.target.value))}
-        placeholder="0"
+        value={todayFinance?.roomBalance || ""}
+        onChange={(e) =>
+          setDailyFinance(
+            today,
+            "roomBalance",
+            Number(e.target.value),
+          )
+        }
+        placeholder="Masukkan saldo awal"
+        className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+      />
+    </div>
+
+    <div>
+      <label className="mb-1 block text-xs font-medium text-[#765542]">
+        Pemasukan
+      </label>
+      <input
+        type="number"
+        min="0"
+        value={todayFinance?.income || ""}
+        onChange={(e) =>
+          setDailyFinance(
+            today,
+            "income",
+            Number(e.target.value),
+          )
+        }
+        placeholder="Masukkan pemasukan"
         className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
       />
     </div>
@@ -206,23 +245,15 @@ const totalVouchers = rooms.reduce(
       <input
         type="number"
         min="0"
-        value={finance?.otpCost || ""}
-        onChange={(e) => setFinance("otpCost", Number(e.target.value))}
-        placeholder="0"
-        className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-      />
-    </div>
-
-    <div>
-      <label className="mb-1 block text-xs font-medium text-[#765542]">
-        Modal ROOM
-      </label>
-      <input
-        type="number"
-        min="0"
-        value={finance?.otpCost || ""}
-        onChange={(e) => setFinance("roomCost", Number(e.target.value))}
-        placeholder="0"
+        value={todayFinance?.otpCost || ""}
+        onChange={(e) =>
+          setDailyFinance(
+            today,
+            "otpCost",
+            Number(e.target.value),
+          )
+        }
+        placeholder="Masukkan modal OTP"
         className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
       />
     </div>
@@ -234,9 +265,15 @@ const totalVouchers = rooms.reduce(
       <input
         type="number"
         min="0"
-        value={finance?.expenses || ""}
-        onChange={(e) => setFinance("expenses", Number(e.target.value))}
-        placeholder="0"
+        value={todayFinance?.expenses || ""}
+        onChange={(e) =>
+          setDailyFinance(
+            today,
+            "expenses",
+            Number(e.target.value),
+          )
+        }
+        placeholder="Masukkan pengeluaran"
         className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
       />
     </div>
@@ -244,10 +281,16 @@ const totalVouchers = rooms.reduce(
 
   <div className="mt-4 rounded-2xl bg-[#f8eee7] p-4 text-center">
     <p className="text-xs font-medium text-[#8b6b57]">
-      UNTUNG BERSIH
+      SALDO AKHIR
     </p>
     <p className="mt-1 text-2xl font-bold text-[#6f4932]">
-      Rp {formatRupiah(netProfit)}
+      Rp{" "}
+      {formatRupiah(
+        (todayFinance?.roomBalance || 0) +
+          (todayFinance?.income || 0) -
+          (todayFinance?.otpCost || 0) -
+          (todayFinance?.expenses || 0),
+      )}
     </p>
   </div>
 </Card>
