@@ -17,7 +17,7 @@ import {
   roomPin,
   setRoomPin,
   setSlotNumber,
-  setDailyFinance,,
+  setDailyFinance,
   toggleVoucher,
   unusedNumbers,
   useAppData,
