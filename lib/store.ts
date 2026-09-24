@@ -325,8 +325,6 @@ if (finance && typeof finance === "object") {
   }
 }
 
-return data
-
   return data
 }
   let state: AppData | null = null
