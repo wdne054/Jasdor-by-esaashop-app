@@ -35,8 +35,9 @@ const todayFinance = finance?.days.find(
   (day) => day.date === today,
 )
 
-const netProfit = todayFinance
-  ? todayFinance.income -
+const saldoAkhir = todayFinance
+  ? todayFinance.roomBalance +
+    todayFinance.income -
     todayFinance.otpCost -
     todayFinance.expenses
   : 0
@@ -284,13 +285,7 @@ const totalVouchers = rooms.reduce(
       SALDO AKHIR
     </p>
     <p className="mt-1 text-2xl font-bold text-[#6f4932]">
-      Rp{" "}
-      {formatRupiah(
-        (todayFinance?.roomBalance || 0) +
-          (todayFinance?.income || 0) -
-          (todayFinance?.otpCost || 0) -
-          (todayFinance?.expenses || 0),
-      )}
+  Rp {formatRupiah(saldoAkhir)}
     </p>
   </div>
 </Card>
