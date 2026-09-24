@@ -483,23 +483,7 @@ export type HistoryEntry = {
   buyer: string
   voucher: VoucherType
   at: number
-}{
-  update((d) => {
-    const slot = d.rooms[roomId]?.[index]
-
-    if (!slot || !slot.number) return
-
-    const currentlyChecked = slot.vouchers[voucherType]
-
-    slot.vouchers[voucherType] = !currentlyChecked
-
-    slot.usesLeft = VOUCHER_TYPES.filter(
-      (type) => !slot.vouchers[type],
-    ).length
-
-    slot.used = slot.usesLeft === 0
-  })
-}
+      }
 export function parseNumbers(input: string): string[] {
   return input
     .split(/[\s,;]+/)
