@@ -52,11 +52,8 @@ export type HistoryEntry = {
   slot: number
   number: string
   buyer: string
+  voucher: VoucherType
   at: number
-  /** pemakaian ke-berapa dari 3 */
-  useNo: number
-  /** sisa voucher setelah pemakaian ini */
-  usesLeft: number
 }
 export type FinanceData = {
   income: number
@@ -440,6 +437,53 @@ export function toggleVoucher(
   index: number,
   voucherType: VoucherType,
 ) {
+  update((d) => {
+    const slot = d.rooms[roomId]?.[index]
+    if (!slot || !slot.number) return
+
+    const checked = slot.vouchers[voucherType]
+    slot.vouchers[voucherType] = !checked
+
+    slot.usesLeft = VOUCHER_TYPES.filter(
+      (t) => !slot.vouchers[t],
+    ).length
+
+    slot.used = slot.usesLeft === 0
+
+    if (!checked) {
+      d.history.unshift({
+        id: `${Date.now()}-${roomId}-${index}-${voucherType}`,
+        roomId,
+        roomName: roomName(roomId),
+        slot: index + 1,
+        number: slot.number,
+        buyer: "",
+        voucher: voucherType,
+        at: Date.now(),
+      })
+    } else {
+      d.history = d.history.filter(
+        (h) =>
+          !(
+            h.roomId === roomId &&
+            h.slot === index + 1 &&
+            h.number === slot.number &&
+            h.voucher === voucherType
+          ),
+      )
+    }
+  })
+      }
+export type HistoryEntry = {
+  id: string
+  roomId: string
+  roomName: string
+  slot: number
+  number: string
+  buyer: string
+  voucher: VoucherType
+  at: number
+}{
   update((d) => {
     const slot = d.rooms[roomId]?.[index]
 
