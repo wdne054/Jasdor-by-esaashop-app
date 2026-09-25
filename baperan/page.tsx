@@ -232,29 +232,21 @@ const used = items
   </div>
 </div>
 
-        <button
+                <button
           type="button"
-          onClick={() => {
-            setShowAdd(true)
-            setError("")
-          }}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-base font-semibold text-primary-foreground"
-        >
-          <Plus className="size-5" />
-          Tambah Nomor
-        </button>
-
-        <button
-  type="button"
-  onClick={takeOldestNumber}
-  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-sm font-semibold"
->
-  🎯 AMBIL NOMOR LAMA
-</button>
+          onClick={copyAvailable}
           className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-sm font-semibold"
         >
           <Copy className="size-4" />
           Copy semua nomor yang belum dipakai
+        </button>
+
+        <button
+          type="button"
+          onClick={takeOldestNumber}
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-sm font-semibold"
+        >
+          🎯 AMBIL NOMOR LAMA
         </button>
 
         <input
