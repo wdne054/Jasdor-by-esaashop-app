@@ -42,7 +42,40 @@ export default function BaperanPage() {
   const [search, setSearch] = useState("")
   const [showAdd, setShowAdd] = useState(false)
   const [error, setError] = useState("")
+export default function BaperanPage() {
+  const [items, setItems] = useState<BaperanNumber[]>([])
+  const [mounted, setMounted] = useState(false)
+  const [input, setInput] = useState("")
+  const [pin, setPin] = useState("")
+  const [search, setSearch] = useState("")
+  const [showAdd, setShowAdd] = useState(false)
+  const [error, setError] = useState("")
 
+  const available = useMemo(() => {
+    return items
+      .filter((item) => !item.used)
+      .filter(
+        (item) =>
+          item.number.includes(search) ||
+          item.pin.includes(search),
+      )
+      .sort((a, b) => a.createdAt - b.createdAt)
+  }, [items, search])
+
+  const used = useMemo(() => {
+    return items
+      .filter((item) => item.used)
+      .filter(
+        (item) =>
+          item.number.includes(search) ||
+          item.pin.includes(search),
+      )
+      .sort((a, b) => (b.usedAt ?? 0) - (a.usedAt ?? 0))
+  }, [items, search])
+
+  useEffect(() => {
+    ...
+  })
   useEffect(() => {
     setItems(readNumbers())
     setMounted(true)
@@ -77,7 +110,8 @@ export default function BaperanPage() {
         number,
         pin: cleanPin,
         used: false,
-        usedAt: null,
+createdAt: Date.now() + index,
+usedAt: null,
       }))
 
     if (newItems.length === 0) {
@@ -85,7 +119,7 @@ export default function BaperanPage() {
       return
     }
 
-    update([...newItems, ...items])
+    update([...items, ...newItems])
     setInput("")
     setPin("")
     setError("")
@@ -119,8 +153,13 @@ export default function BaperanPage() {
       await navigator.clipboard.writeText(numbers.join("\n"))
     } catch {}
   }
+const available = items
+  .filter((x) => !x.used)
+  .sort((a, b) => a.createdAt - b.createdAt)
 
-  const filtered = useMemo(() => {
+const used = items
+  .filter((x) => x.used)
+  .sort((a, b) => (b.usedAt ?? 0) - (a.usedAt ?? 0))
     const q = search.trim().toLowerCase()
 
     if (!q) return items
@@ -283,59 +322,117 @@ export default function BaperanPage() {
               </p>
             </div>
           ) : (
-            filtered.map((item) => (
-              <div
-                key={item.id}
-                className={`rounded-2xl border bg-card p-4 ${
-                  item.used ? "opacity-60" : ""
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={`font-mono text-lg font-bold tracking-wide ${
-                        item.used ? "line-through" : ""
-                      }`}
-                    >
-                      {item.number}
-                    </p>
+            <>
+  {/* BELUM DIPAKAI */}
+  <div className="mb-6">
+    <div className="mb-3 flex items-center justify-between">
+      <h3 className="font-bold text-[#6f4932]">
+        🟢 Belum Dipakai
+      </h3>
+      <span className="rounded-full bg-[#eef8f0] px-2 py-1 text-xs font-semibold text-[#2f7a45]">
+        {available.length} nomor
+      </span>
+    </div>
 
-                    <p className="mt-1 font-mono text-sm">
-                      PIN: <span className="font-bold">{item.pin}</span>
-                    </p>
+    <div className="space-y-3">
+      {available.map((item) => (
+        <div
+          key={item.id}
+          className="rounded-2xl border bg-card p-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="font-mono text-lg font-bold tracking-wide">
+                {item.number}
+              </p>
 
-                    <p className="text-muted-foreground mt-1 text-xs">
-                      {item.used
-                        ? "❌ Sudah dipakai"
-                        : "☕ Belum dipakai · 1x tersedia"}
-                    </p>
-                  </div>
+              <p className="mt-1 font-mono text-sm">
+                PIN: <span className="font-bold">{item.pin}</span>
+              </p>
 
-                  <button
-                    type="button"
-                    onClick={() => removeNumber(item.id)}
-                    aria-label="Hapus nomor"
-                    className="rounded-lg p-2 text-muted-foreground hover:bg-muted"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
-                </div>
+              <p className="mt-1 text-xs text-[#2f7a45]">
+                ☕ Stok aktif
+              </p>
+            </div>
 
-                {!item.used ? (
-                  <button
-                    type="button"
-                    onClick={() => markAsUsed(item.id)}
-                    className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-bold text-primary-foreground"
-                  >
-                    <Check className="size-5" />
-                    PAKAI
-                  </button>
-                ) : null}
-              </div>
-            ))
-          )}
+            <button
+              type="button"
+              onClick={() => removeNumber(item.id)}
+              className="rounded-lg p-2 text-muted-foreground hover:bg-muted"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={() => navigator.clipboard.writeText(item.number)}
+              className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border font-bold"
+            >
+              <Copy className="size-4" />
+              COPY
+            </button>
+
+            <button
+              type="button"
+              onClick={() => markAsUsed(item.id)}
+              className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary font-bold text-primary-foreground"
+            >
+              <Check className="size-4" />
+              PAKAI
+            </button>
+          </div>
         </div>
-      </div>
-    </main>
-  )
-      }
+      ))}
+    </div>
+  </div>
+
+  {/* SUDAH DIPAKAI */}
+  <div>
+    <div className="mb-3 flex items-center justify-between">
+      <h3 className="font-bold text-[#6f4932]">
+        ⚫ Sudah Dipakai
+      </h3>
+      <span className="rounded-full bg-[#f2f2f2] px-2 py-1 text-xs font-semibold text-[#666]">
+        {used.length} nomor
+      </span>
+    </div>
+
+    <div className="space-y-3">
+      {used.map((item) => (
+        <div
+          key={item.id}
+          className="rounded-2xl border bg-card p-4 opacity-70"
+        >
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="font-mono text-lg font-bold tracking-wide line-through">
+                {item.number}
+              </p>
+
+              <p className="mt-1 font-mono text-sm">
+                PIN: <span className="font-bold">{item.pin}</span>
+              </p>
+
+              <p className="mt-1 text-xs text-[#666]">
+                Dipakai{" "}
+                {item.usedAt
+                  ? new Date(item.usedAt).toLocaleString("id-ID")
+                  : ""}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => removeNumber(item.id)}
+              className="rounded-lg p-2 text-muted-foreground hover:bg-muted"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</>
