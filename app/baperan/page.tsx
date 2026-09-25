@@ -9,6 +9,7 @@ type BaperanNumber = {
   number: string
   pin: string
   used: boolean
+  createdAt: number
   usedAt: number | null
 }
 
@@ -17,7 +18,22 @@ const STORAGE_KEY = "jasdor.baperan.v1"
 function readNumbers(): BaperanNumber[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
+    if (!raw) return []
+
+    const parsed = JSON.parse(raw)
+
+    if (!Array.isArray(parsed)) return []
+
+    return parsed.map((item, index) => ({
+      ...item,
+      createdAt:
+        typeof item.createdAt === "number"
+          ? item.createdAt
+          : Date.now() - (parsed.length - index),
+      usedAt:
+        typeof item.usedAt === "number" ? item.usedAt : null,
+      used: Boolean(item.used),
+    }))
   } catch {
     return []
   }
@@ -77,6 +93,7 @@ export default function BaperanPage() {
         number,
         pin: cleanPin,
         used: false,
+        createdAt: Date.now() + index,
         usedAt: null,
       }))
 
@@ -85,7 +102,7 @@ export default function BaperanPage() {
       return
     }
 
-    update([...newItems, ...items])
+    update([...items, ...newItems])
     setInput("")
     setPin("")
     setError("")
@@ -111,29 +128,67 @@ export default function BaperanPage() {
   }
 
   async function copyAvailable() {
-    const numbers = items.filter((item) => !item.used).map((item) => item.number)
+    const numbers = items
+      .filter((item) => !item.used)
+      .sort((a, b) => a.createdAt - b.createdAt)
+      .map((item) => item.number)
 
-    if (!numbers.length) return
+    if (!numbers.length) {
+      setError("Tidak ada nomor yang belum dipakai.")
+      return
+    }
 
     try {
       await navigator.clipboard.writeText(numbers.join("\n"))
-    } catch {}
+      setError(`${numbers.length} nomor berhasil disalin.`)
+    } catch {
+      setError("Gagal menyalin nomor.")
+    }
   }
 
-  const filtered = useMemo(() => {
+  async function takeOldestNumber() {
+    const oldest = items
+      .filter((item) => !item.used)
+      .sort((a, b) => a.createdAt - b.createdAt)[0]
+
+    if (!oldest) {
+      setError("Tidak ada nomor yang belum dipakai.")
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(oldest.number)
+      setError(`Nomor ${oldest.number} berhasil disalin.`)
+    } catch {
+      setError("Gagal menyalin nomor.")
+    }
+  }
+
+  const available = useMemo(() => {
     const q = search.trim().toLowerCase()
 
-    if (!q) return items
-
-    return items.filter(
-      (item) =>
-        item.number.toLowerCase().includes(q) ||
-        item.pin.toLowerCase().includes(q),
-    )
+    return items
+      .filter((item) => !item.used)
+      .filter(
+        (item) =>
+          item.number.toLowerCase().includes(q) ||
+          item.pin.toLowerCase().includes(q),
+      )
+      .sort((a, b) => a.createdAt - b.createdAt)
   }, [items, search])
 
-  const available = items.filter((item) => !item.used).length
-  const used = items.filter((item) => item.used).length
+  const used = useMemo(() => {
+    const q = search.trim().toLowerCase()
+
+    return items
+      .filter((item) => item.used)
+      .filter(
+        (item) =>
+          item.number.toLowerCase().includes(q) ||
+          item.pin.toLowerCase().includes(q),
+      )
+      .sort((a, b) => (b.usedAt ?? 0) - (a.usedAt ?? 0))
+  }, [items, search])
 
   if (!mounted) {
     return (
@@ -158,10 +213,9 @@ export default function BaperanPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <Coffee className="size-5" />
-              <h1 className="font-serif text-xl font-bold">
-                BAPERAN
-              </h1>
+              <h1 className="font-serif text-xl font-bold">BAPERAN</h1>
             </div>
+
             <p className="text-muted-foreground text-xs">
               1 nomor = 1x pakai · PIN masing-masing
             </p>
@@ -172,25 +226,29 @@ export default function BaperanPage() {
       <div className="space-y-3 px-4 pt-4">
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl border bg-card p-4">
-            <p className="text-muted-foreground text-xs">Siap dipakai</p>
-            <p className="mt-1 text-2xl font-bold">{available}</p>
+            <p className="text-muted-foreground text-xs">
+              Belum dipakai
+            </p>
+            <p className="mt-1 text-2xl font-bold">{available.length}</p>
           </div>
 
           <div className="rounded-2xl border bg-card p-4">
-            <p className="text-muted-foreground text-xs">Sudah dipakai</p>
-            <p className="mt-1 text-2xl font-bold">{used}</p>
+            <p className="text-muted-foreground text-xs">
+              Sudah dipakai
+            </p>
+            <p className="mt-1 text-2xl font-bold">{used.length}</p>
           </div>
         </div>
 
         <button
           type="button"
           onClick={() => {
-            setShowAdd(true)
+            setShowAdd(!showAdd)
             setError("")
           }}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-base font-semibold text-primary-foreground"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground"
         >
-          <Plus className="size-5" />
+          <Plus className="size-4" />
           Tambah Nomor
         </button>
 
@@ -203,12 +261,26 @@ export default function BaperanPage() {
           Copy semua nomor yang belum dipakai
         </button>
 
+        <button
+          type="button"
+          onClick={takeOldestNumber}
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-sm font-semibold"
+        >
+          🎯 AMBIL NOMOR LAMA
+        </button>
+
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Cari nomor atau PIN…"
-          className="h-12 w-full rounded-xl border bg-background px-4 font-mono text-sm outline-none focus:ring-2"
+          placeholder="Cari nomor atau PIN..."
+          className="h-12 w-full rounded-xl border bg-card px-3 font-mono text-base outline-none focus:ring-2"
         />
+
+        {error ? (
+          <p className="rounded-xl bg-muted px-3 py-2 text-sm font-semibold">
+            {error}
+          </p>
+        ) : null}
 
         {showAdd ? (
           <div className="rounded-2xl border bg-card p-4">
@@ -271,71 +343,142 @@ export default function BaperanPage() {
           </div>
         ) : null}
 
-        <div className="space-y-3">
-          {filtered.length === 0 ? (
-            <div className="rounded-2xl border bg-card p-6 text-center">
-              <Coffee className="mx-auto size-8 opacity-50" />
-              <p className="mt-2 font-semibold">
-                Belum ada nomor BAPERAN
-              </p>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Tekan “Tambah Nomor” untuk mulai.
-              </p>
-            </div>
-          ) : (
-            filtered.map((item) => (
-              <div
-                key={item.id}
-                className={`rounded-2xl border bg-card p-4 ${
-                  item.used ? "opacity-60" : ""
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className={`font-mono text-lg font-bold tracking-wide ${
-                        item.used ? "line-through" : ""
-                      }`}
+        {/* BELUM DIPAKAI */}
+        <div className="mb-6">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="font-bold text-[#6f4932]">
+              🟢 Belum Dipakai
+            </h3>
+
+            <span className="rounded-full bg-[#eef8f0] px-2 py-1 text-xs font-semibold text-[#2f7a45]">
+              {available.length} nomor
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {available.length === 0 ? (
+              <div className="rounded-2xl border bg-card p-6 text-center">
+                <Coffee className="mx-auto size-8 opacity-50" />
+                <p className="mt-2 font-semibold">
+                  Tidak ada nomor yang belum dipakai
+                </p>
+              </div>
+            ) : (
+              available.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-2xl border bg-card p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-mono text-lg font-bold tracking-wide">
+                        {item.number}
+                      </p>
+
+                      <p className="mt-1 font-mono text-sm">
+                        PIN: <span className="font-bold">{item.pin}</span>
+                      </p>
+
+                      <p className="mt-1 text-xs text-[#2f7a45]">
+                        ☕ Stok aktif
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeNumber(item.id)}
+                      aria-label="Hapus nomor"
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-muted"
                     >
-                      {item.number}
-                    </p>
-
-                    <p className="mt-1 font-mono text-sm">
-                      PIN: <span className="font-bold">{item.pin}</span>
-                    </p>
-
-                    <p className="text-muted-foreground mt-1 text-xs">
-                      {item.used
-                        ? "❌ Sudah dipakai"
-                        : "☕ Belum dipakai · 1x tersedia"}
-                    </p>
+                      <Trash2 className="size-4" />
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => removeNumber(item.id)}
-                    aria-label="Hapus nomor"
-                    className="rounded-lg p-2 text-muted-foreground hover:bg-muted"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
-                </div>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigator.clipboard.writeText(item.number)
+                      }
+                      className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border font-bold"
+                    >
+                      <Copy className="size-4" />
+                      COPY
+                    </button>
 
-                {!item.used ? (
-                  <button
-                    type="button"
-                    onClick={() => markAsUsed(item.id)}
-                    className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-bold text-primary-foreground"
-                  >
-                    <Check className="size-5" />
-                    PAKAI
-                  </button>
-                ) : null}
+                    <button
+                      type="button"
+                      onClick={() => markAsUsed(item.id)}
+                      className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary font-bold text-primary-foreground"
+                    >
+                      <Check className="size-4" />
+                      PAKAI
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* SUDAH DIPAKAI */}
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="font-bold text-[#6f4932]">
+              ⚫ Sudah Dipakai
+            </h3>
+
+            <span className="rounded-full bg-[#f2f2f2] px-2 py-1 text-xs font-semibold text-[#666]">
+              {used.length} nomor
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {used.length === 0 ? (
+              <div className="rounded-2xl border bg-card p-6 text-center">
+                <p className="font-semibold">
+                  Belum ada nomor yang dipakai
+                </p>
               </div>
-            ))
-          )}
+            ) : (
+              used.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-2xl border bg-card p-4 opacity-70"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-mono text-lg font-bold tracking-wide line-through">
+                        {item.number}
+                      </p>
+
+                      <p className="mt-1 font-mono text-sm">
+                        PIN: <span className="font-bold">{item.pin}</span>
+                      </p>
+
+                      <p className="mt-1 text-xs text-[#666]">
+                        Dipakai{" "}
+                        {item.usedAt
+                          ? new Date(item.usedAt).toLocaleString("id-ID")
+                          : ""}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeNumber(item.id)}
+                      aria-label="Hapus nomor"
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-muted"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </main>
   )
-  }
+                                       }
