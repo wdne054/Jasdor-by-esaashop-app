@@ -125,7 +125,19 @@ usedAt: null,
     setError("")
     setShowAdd(false)
   }
+function takeOldestNumber() {
+  const oldest = items
+    .filter((item) => !item.used)
+    .sort((a, b) => a.createdAt - b.createdAt)[0]
 
+  if (!oldest) {
+    setError("Tidak ada nomor yang belum dipakai.")
+    return
+  }
+
+  navigator.clipboard.writeText(oldest.number)
+  setError(`Nomor ${oldest.number} berhasil disalin.`)
+}
   function markAsUsed(id: string) {
     const next = items.map((item) =>
       item.id === id
@@ -208,18 +220,17 @@ const used = items
         </div>
       </header>
 
-      <div className="space-y-3 px-4 pt-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border bg-card p-4">
-            <p className="text-muted-foreground text-xs">Siap dipakai</p>
-            <p className="mt-1 text-2xl font-bold">{available}</p>
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+  <div className="rounded-2xl border bg-card p-4">
+    <p className="text-muted-foreground text-xs">Siap dipakai</p>
+    <p className="mt-1 text-2xl font-bold">{available.length}</p>
+  </div>
 
-          <div className="rounded-2xl border bg-card p-4">
-            <p className="text-muted-foreground text-xs">Sudah dipakai</p>
-            <p className="mt-1 text-2xl font-bold">{used}</p>
-          </div>
-        </div>
+  <div className="rounded-2xl border bg-card p-4">
+    <p className="text-muted-foreground text-xs">Sudah dipakai</p>
+    <p className="mt-1 text-2xl font-bold">{used.length}</p>
+  </div>
+</div>
 
         <button
           type="button"
@@ -234,8 +245,12 @@ const used = items
         </button>
 
         <button
-          type="button"
-          onClick={copyAvailable}
+  type="button"
+  onClick={takeOldestNumber}
+  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-sm font-semibold"
+>
+  🎯 AMBIL NOMOR LAMA
+</button>
           className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border bg-card px-4 text-sm font-semibold"
         >
           <Copy className="size-4" />
