@@ -208,12 +208,6 @@ function normalize(raw: unknown): AppData {
     }
   }
 
-  for (const room of ROOMS) {
-    if (!roomOrder.includes(room.id)) {
-      roomOrder.push(room.id)
-    }
-  }
-
   data.roomOrder = roomOrder
 
   const inputRoomNames =
@@ -1154,4 +1148,22 @@ export async function copyText(
 
     return false
   }
+}
+
+export function getRooms(
+  data: AppData,
+): RoomInfo[] {
+  return data.roomOrder
+    .filter(
+      (roomId) =>
+        typeof roomId === "string" &&
+        roomId.trim().length > 0 &&
+        data.rooms[roomId],
+    )
+    .map((roomId) => ({
+      id: roomId,
+      name:
+        data.roomNames[roomId] ??
+        `ROOM ${data.roomOrder.indexOf(roomId) + 1}`,
+    }))
 }
