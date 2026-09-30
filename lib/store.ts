@@ -799,7 +799,44 @@ export function setDailyFinance(
         : 0
   })
 }
+export function adjustDailyFinance(
+  date: string,
+  field:
+    | "income"
+    | "roomBalance"
+    | "otpCost"
+    | "expenses",
+  amount: number,
+) {
+  if (!Number.isFinite(amount)) {
+    return
+  }
 
+  update((data) => {
+    let day = data.finance.days.find(
+      (item) => item.date === date,
+    )
+
+    if (!day) {
+      day = {
+        date,
+        income: 0,
+        roomBalance: 0,
+        otpCost: 0,
+        expenses: 0,
+      }
+
+      data.finance.days.push(day)
+    }
+
+    const current = day[field] ?? 0
+
+    day[field] = Math.max(
+      0,
+      current + amount,
+    )
+  })
+      }
 /* ---------- slot actions ---------- */
 
 export function setSlotNumber(
