@@ -22,12 +22,14 @@ import {
 import { Button } from "@/components/ui/button"
 
 import {
+import {
   USES_PER_NUMBER,
   VOUCHER_TYPES,
   addRoom,
   removeRoom,
   clearSlot,
   copyText,
+  exportBackup,
   getRooms,
   remainingUses,
   roomPin,
