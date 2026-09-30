@@ -36,6 +36,7 @@ import {
   roomPin,
   setRoomPin,
   setSlotNumber,
+  adjustDailyFinance,
   setDailyFinance,
   toggleVoucher,
   unusedNumbers,
@@ -101,68 +102,90 @@ function RoomNumberInput({
 type FinanceInputProps = {
   value: number
   placeholder: string
-  onSave: (value: number) => void
+  onAdd: (value: number) => void
+  onSubtract: (value: number) => void
 }
 
 function FinanceInput({
   value,
   placeholder,
-  onSave,
+  onAdd,
+  onSubtract,
 }: FinanceInputProps) {
-  const [draft, setDraft] =
-    useState(
-      value > 0 ? String(value) : "",
-    )
+  const [draft, setDraft] = useState("")
 
-  useEffect(() => {
-    setDraft(
-      value > 0 ? String(value) : "",
-    )
-  }, [value])
-
-  function save() {
-    const parsed =
-      draft.trim() === ""
-        ? 0
-        : Number(draft)
+  function handleAdd() {
+    const parsed = Number(draft)
 
     if (
-      Number.isFinite(parsed) &&
-      parsed >= 0
+      !Number.isFinite(parsed) ||
+      parsed <= 0
     ) {
-      if (parsed !== value) {
-        onSave(parsed)
-      }
-
       return
     }
 
-    setDraft(
-      value > 0 ? String(value) : "",
-    )
+    onAdd(parsed)
+    setDraft("")
+  }
+
+  function handleSubtract() {
+    const parsed = Number(draft)
+
+    if (
+      !Number.isFinite(parsed) ||
+      parsed <= 0
+    ) {
+      return
+    }
+
+    onSubtract(parsed)
+    setDraft("")
   }
 
   return (
-    <input
-      type="number"
-      min="0"
-      inputMode="numeric"
-      value={draft}
-      onChange={(event) =>
-        setDraft(event.target.value)
-      }
-      onBlur={save}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          event.currentTarget.blur()
+    <div className="space-y-2">
+      <div className="rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm font-bold text-[#6f4932]">
+        Rp {formatRupiah(value)}
+      </div>
+
+      <input
+        type="number"
+        min="0"
+        inputMode="numeric"
+        value={draft}
+        onChange={(event) =>
+          setDraft(event.target.value)
         }
-      }}
-      placeholder={placeholder}
-      className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-    />
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            handleAdd()
+          }
+        }}
+        placeholder={placeholder}
+        className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+      />
+
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          type="button"
+          onClick={handleAdd}
+          className="h-9 rounded-xl bg-[#8b5e3c] text-xs font-bold text-white"
+        >
+          + TAMBAH
+        </Button>
+
+        <Button
+          type="button"
+          onClick={handleSubtract}
+          className="h-9 rounded-xl border border-[#8b5e3c] bg-white text-xs font-bold text-[#8b5e3c]"
+        >
+          − KURANG
+        </Button>
+      </div>
+    </div>
   )
 }
-
+  
 /* =========================================================
    HOME
    ========================================================= */
@@ -466,13 +489,20 @@ export default function HomePage() {
                     todayFinance?.roomBalance ??
                     0
                   }
-                  onSave={(value) =>
-                    setDailyFinance(
-                      today,
-                      "roomBalance",
-                      value,
-                    )
-                  }
+                  onAdd={(value) =>
+  adjustDailyFinance(
+    today,
+    "roomBalance",
+    value,
+  )
+}
+onSubtract={(value) =>
+  adjustDailyFinance(
+    today,
+    "roomBalance",
+    -value,
+  )
+}
                   placeholder="Masukkan saldo awal"
                 />
               </div>
@@ -487,13 +517,20 @@ export default function HomePage() {
                     todayFinance?.income ??
                     0
                   }
-                  onSave={(value) =>
-                    setDailyFinance(
-                      today,
-                      "income",
-                      value,
-                    )
-                  }
+                  onAdd={(value) =>
+  adjustDailyFinance(
+    today,
+    "income",
+    value,
+  )
+}
+onSubtract={(value) =>
+  adjustDailyFinance(
+    today,
+    "income",
+    -value,
+  )
+}
                   placeholder="Masukkan pemasukan"
                 />
               </div>
@@ -508,13 +545,20 @@ export default function HomePage() {
                     todayFinance?.otpCost ??
                     0
                   }
-                  onSave={(value) =>
-                    setDailyFinance(
-                      today,
-                      "otpCost",
-                      value,
-                    )
-                  }
+                  onAdd={(value) =>
+  adjustDailyFinance(
+    today,
+    "otpCost",
+    value,
+  )
+}
+onSubtract={(value) =>
+  adjustDailyFinance(
+    today,
+    "otpCost",
+    -value,
+  )
+}
                   placeholder="Masukkan modal OTP"
                 />
               </div>
@@ -529,13 +573,20 @@ export default function HomePage() {
                     todayFinance?.expenses ??
                     0
                   }
-                  onSave={(value) =>
-                    setDailyFinance(
-                      today,
-                      "expenses",
-                      value,
-                    )
-                  }
+                  onAdd={(value) =>
+  adjustDailyFinance(
+    today,
+    "expenses",
+    value,
+  )
+}
+onSubtract={(value) =>
+  adjustDailyFinance(
+    today,
+    "expenses",
+    -value,
+  )
+}
                   placeholder="Masukkan pengeluaran"
                 />
               </div>
