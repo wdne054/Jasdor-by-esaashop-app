@@ -98,6 +98,13 @@ function RoomNumberInput({
 /* =========================================================
    INPUT KEUANGAN
    ========================================================= */
+function formatRupiah(
+  value: number,
+) {
+  return new Intl.NumberFormat(
+    "id-ID",
+  ).format(value)
+}
 
 type FinanceInputProps = {
   value: number
@@ -232,14 +239,6 @@ export default function HomePage() {
       todayFinance.otpCost -
       todayFinance.expenses
     : 0
-
-  function formatRupiah(
-    value: number,
-  ) {
-    return new Intl.NumberFormat(
-      "id-ID",
-    ).format(value)
-  }
 
   if (!data) {
     return (
