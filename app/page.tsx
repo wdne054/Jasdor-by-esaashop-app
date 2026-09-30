@@ -1,9 +1,26 @@
 "use client"
 
 import Link from "next/link"
-import { ChevronRight, Coffee, Copy, Sparkles } from "lucide-react"
-import { AppHeader, Card, PinBadge, useToast } from "@/components/app-ui"
+import {
+  useEffect,
+  useState,
+} from "react"
+import {
+  ChevronRight,
+  Coffee,
+  Copy,
+  Sparkles,
+} from "lucide-react"
+
+import {
+  AppHeader,
+  Card,
+  PinBadge,
+  useToast,
+} from "@/components/app-ui"
+
 import { Button } from "@/components/ui/button"
+
 import {
   USES_PER_NUMBER,
   VOUCHER_TYPES,
@@ -12,7 +29,6 @@ import {
   clearSlot,
   copyText,
   getRooms,
-  markUsed,
   remainingUses,
   roomPin,
   setRoomPin,
@@ -24,27 +40,159 @@ import {
   usedCount,
 } from "@/lib/store"
 
+/* =========================================================
+   INPUT NOMOR ROOM
+   ========================================================= */
+
+type RoomNumberInputProps = {
+  value: string
+  disabled: boolean
+  onSave: (value: string) => void
+}
+
+function RoomNumberInput({
+  value,
+  disabled,
+  onSave,
+}: RoomNumberInputProps) {
+  const [draft, setDraft] =
+    useState(value)
+
+  useEffect(() => {
+    setDraft(value)
+  }, [value])
+
+  function save() {
+    const clean = draft.trim()
+
+    if (clean !== value) {
+      onSave(clean)
+    }
+  }
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      value={draft}
+      onChange={(event) =>
+        setDraft(event.target.value)
+      }
+      onBlur={save}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          event.currentTarget.blur()
+        }
+      }}
+      placeholder="Masukkan nomor OTP"
+      disabled={disabled}
+      className="min-w-[180px] flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+    />
+  )
+}
+
+/* =========================================================
+   INPUT KEUANGAN
+   ========================================================= */
+
+type FinanceInputProps = {
+  value: number
+  placeholder: string
+  onSave: (value: number) => void
+}
+
+function FinanceInput({
+  value,
+  placeholder,
+  onSave,
+}: FinanceInputProps) {
+  const [draft, setDraft] =
+    useState(
+      value > 0 ? String(value) : "",
+    )
+
+  useEffect(() => {
+    setDraft(
+      value > 0 ? String(value) : "",
+    )
+  }, [value])
+
+  function save() {
+    const parsed =
+      draft.trim() === ""
+        ? 0
+        : Number(draft)
+
+    if (
+      Number.isFinite(parsed) &&
+      parsed >= 0
+    ) {
+      if (parsed !== value) {
+        onSave(parsed)
+      }
+
+      return
+    }
+
+    setDraft(
+      value > 0 ? String(value) : "",
+    )
+  }
+
+  return (
+    <input
+      type="number"
+      min="0"
+      inputMode="numeric"
+      value={draft}
+      onChange={(event) =>
+        setDraft(event.target.value)
+      }
+      onBlur={save}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          event.currentTarget.blur()
+        }
+      }}
+      placeholder={placeholder}
+      className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+    />
+  )
+}
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
 export default function HomePage() {
   const data = useAppData()
-  const { toast, ToastView } = useToast()
-const finance = data?.finance
+  const { toast, ToastView } =
+    useToast()
 
-const today = new Date().toLocaleDateString("en-CA")
+  const finance = data?.finance
 
-const todayFinance = finance?.days.find(
-  (day) => day.date === today,
-)
+  const today = getLocalDateKey()
 
-const saldoAkhir = todayFinance
-  ? todayFinance.roomBalance +
-    todayFinance.income -
-    todayFinance.otpCost -
-    todayFinance.expenses
-  : 0
+  const todayFinance =
+    finance?.days.find(
+      (day) => day.date === today,
+    )
 
-  function formatRupiah(value: number) {
-    return new Intl.NumberFormat("id-ID").format(value)
+  const saldoAkhir = todayFinance
+    ? todayFinance.roomBalance +
+      todayFinance.income -
+      todayFinance.otpCost -
+      todayFinance.expenses
+    : 0
+
+  function formatRupiah(
+    value: number,
+  ) {
+    return new Intl.NumberFormat(
+      "id-ID",
+    ).format(value)
   }
+
   if (!data) {
     return (
       <AppHeader
@@ -56,42 +204,66 @@ const saldoAkhir = todayFinance
 
   const rooms = getRooms(data)
 
-const allUnused = rooms.flatMap((room) =>
-  unusedNumbers(data.rooms[room.id]),
-)
+  const allUnused = rooms.flatMap(
+    (room) =>
+      unusedNumbers(
+        data.rooms[room.id],
+      ),
+  )
 
-const totalUsed = rooms.reduce(
-  (total, room) => total + usedCount(data.rooms[room.id]),
-  0,
-)
+  const totalUsed =
+    rooms.reduce(
+      (total, room) =>
+        total +
+        usedCount(
+          data.rooms[room.id],
+        ),
+      0,
+    )
 
-const totalVouchers = rooms.reduce(
-  (total, room) => total + remainingUses(data.rooms[room.id]),
-  0,
-)
+  const totalVouchers =
+    rooms.reduce(
+      (total, room) =>
+        total +
+        remainingUses(
+          data.rooms[room.id],
+        ),
+      0,
+    )
 
   async function copyAll() {
     if (allUnused.length === 0) {
-      toast("Tidak ada nomor tersisa")
+      toast(
+        "Tidak ada nomor tersisa",
+      )
+
       return
     }
 
-    const ok = await copyText(allUnused.join("\n"))
+    const ok =
+      await copyText(
+        allUnused.join("\n"),
+      )
 
-    toast(ok ? `${allUnused.length} nomor dicopy ☕` : "Gagal copy")
+    toast(
+      ok
+        ? `${allUnused.length} nomor dicopy ☕`
+        : "Gagal copy",
+    )
   }
 
   return (
-<main
-  className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed"
-  style={{
-    backgroundImage:
-      "linear-gradient(rgba(255,247,242,0.35), rgba(255,247,242,0.35)), url('/jasdor-bg.jpg')",
-  }}
->
-
+    <main
+      className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(255,247,242,0.35), rgba(255,247,242,0.35)), url('/jasdor-bg.jpg')",
+      }}
+    >
       <div className="mx-auto min-h-screen max-w-md">
+
         {/* HEADER */}
+
         <header className="px-5 pb-4 pt-7">
           <div className="flex items-center gap-3">
             <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/70 bg-white/80 shadow-lg backdrop-blur">
@@ -110,19 +282,14 @@ const totalVouchers = rooms.reduce(
               <p className="text-sm text-[#927463]">
                 Semangat jasdor hari ini 🤎
               </p>
-              <Button
-  onClick={() => removeRoom(room.id)}
-  variant="outline"
-  className="h-8 rounded-lg border-[#e8d7cb] px-2 text-[11px] font-bold text-[#9a6b55]"
->
-  Hapus
-</Button>
             </div>
           </div>
         </header>
 
         <div className="space-y-4 px-4 pb-10">
+
           {/* SUMMARY */}
+
           <Card className="border-white/80 bg-white/80 shadow-lg backdrop-blur">
             <div className="flex items-center gap-3">
               <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#f3ded2]">
@@ -139,7 +306,8 @@ const totalVouchers = rooms.reduce(
                 </p>
 
                 <p className="text-xs text-[#927463]">
-                  {allUnused.length} nomor aktif · {totalUsed} nomor habis
+                  {allUnused.length} nomor aktif ·{" "}
+                  {totalUsed} nomor habis
                 </p>
               </div>
 
@@ -154,7 +322,11 @@ const totalVouchers = rooms.reduce(
           </Card>
 
           {/* BAPERAN */}
-          <Link href="/baperan" className="block">
+
+          <Link
+            href="/baperan"
+            className="block"
+          >
             <Card className="flex items-center gap-3 border-white/80 bg-white/85 shadow-lg backdrop-blur">
               <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#c98767] text-white">
                 <Coffee className="size-6" />
@@ -179,323 +351,420 @@ const totalVouchers = rooms.reduce(
               <ChevronRight className="size-5 text-[#a8785a]" />
             </Card>
           </Link>
-{/* KEUANGAN */}
-<Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
-  <div className="mb-4">
-    <h2 className="text-lg font-bold text-[#6f4932]">
-      💰 Keuangan
-    </h2>
-    <p className="text-xs text-[#8b6b57]">
-      Catatan keuangan hari ini
-    </p>
-  </div>
 
-  <div className="mb-4 rounded-2xl bg-[#f8eee7] p-3 text-center">
-    <p className="text-xs font-semibold text-[#8b6b57]">
-      📅 {new Intl.DateTimeFormat("id-ID", {
-        dateStyle: "full",
-      }).format(new Date())}
-    </p>
-  </div>
+          {/* KEUANGAN */}
 
-  <div className="grid grid-cols-2 gap-3">
-    <div>
-      <label className="mb-1 block text-xs font-medium text-[#765542]">
-        Saldo Awal ROOM
-      </label>
-      <input
-        type="number"
-        min="0"
-        value={todayFinance?.roomBalance || ""}
-        onChange={(e) =>
-          setDailyFinance(
-            today,
-            "roomBalance",
-            Number(e.target.value),
-          )
-        }
-        placeholder="Masukkan saldo awal"
-        className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-      />
-    </div>
+          <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+            <div className="mb-4">
+              <h2 className="text-lg font-bold text-[#6f4932]">
+                💰 Keuangan
+              </h2>
 
-    <div>
-      <label className="mb-1 block text-xs font-medium text-[#765542]">
-        Pemasukan
-      </label>
-      <input
-        type="number"
-        min="0"
-        value={todayFinance?.income || ""}
-        onChange={(e) =>
-          setDailyFinance(
-            today,
-            "income",
-            Number(e.target.value),
-          )
-        }
-        placeholder="Masukkan pemasukan"
-        className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-      />
-    </div>
+              <p className="text-xs text-[#8b6b57]">
+                Catatan keuangan hari ini
+              </p>
+            </div>
 
-    <div>
-      <label className="mb-1 block text-xs font-medium text-[#765542]">
-        Modal OTP
-      </label>
-      <input
-        type="number"
-        min="0"
-        value={todayFinance?.otpCost || ""}
-        onChange={(e) =>
-          setDailyFinance(
-            today,
-            "otpCost",
-            Number(e.target.value),
-          )
-        }
-        placeholder="Masukkan modal OTP"
-        className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-      />
-    </div>
+            <div className="mb-4 rounded-2xl bg-[#f8eee7] p-3 text-center">
+              <p className="text-xs font-semibold text-[#8b6b57]">
+                📅{" "}
+                {new Intl.DateTimeFormat(
+                  "id-ID",
+                  {
+                    dateStyle: "full",
+                  },
+                ).format(new Date())}
+              </p>
+            </div>
 
-    <div>
-      <label className="mb-1 block text-xs font-medium text-[#765542]">
-        Pengeluaran
-      </label>
-      <input
-        type="number"
-        min="0"
-        value={todayFinance?.expenses || ""}
-        onChange={(e) =>
-          setDailyFinance(
-            today,
-            "expenses",
-            Number(e.target.value),
-          )
-        }
-        placeholder="Masukkan pengeluaran"
-        className="w-full rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-      />
-    </div>
-  </div>
+            <div className="grid grid-cols-2 gap-3">
 
-  <div className="mt-4 rounded-2xl bg-[#f8eee7] p-4 text-center">
-    <p className="text-xs font-medium text-[#8b6b57]">
-      SALDO AKHIR
-    </p>
-    <p className="mt-1 text-2xl font-bold text-[#6f4932]">
-  Rp {formatRupiah(saldoAkhir)}
-    </p>
-  </div>
-</Card>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-[#765542]">
+                  Saldo Awal ROOM
+                </label>
 
-{/* ROOM TITLE */}
-{/* ROOMS */}
-<div className="mb-3 flex items-center justify-between">
-  <h2 className="text-lg font-bold text-[#6f4932]">
-    📱 ROOMS
-  </h2>
-
-  <Button
-    type="button"
-    onClick={addRoom}
-    className="h-9 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
-  >
-    + Tambah ROOM
-  </Button>
-</div>
-
-<ul className="space-y-3">
-  {rooms.map((room) => {
-    const slots = data.rooms[room.id]
-    const remaining = remainingUses(slots)
-
-    return (
-      <li key={room.id}>
-        <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
-          <div className="mb-3 flex items-center justify-between gap-2">
-  <div className="min-w-0">
-    <p className="font-serif text-lg font-bold text-[#5d3d2b]">
-      {room.name}
-    </p>
-
-    <div className="mt-1 flex items-center gap-2">
-  <PinBadge
-    pin={roomPin(data, room.id)}
-    className="border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
-  />
-
-  <Button
-    type="button"
-    onClick={() => {
-      const next = window.prompt(
-        `PIN ${room.name}`,
-        roomPin(data, room.id),
-      )
-
-      if (next !== null) {
-        setRoomPin(room.id, next)
-        toast(`PIN ${room.name} berhasil disimpan`)
-      }
-    }}
-    variant="outline"
-    className="h-7 rounded-lg border-[#e8d7cb] px-2 text-[11px] font-bold"
-  >
-    Edit PIN
-  </Button>
-</div>
-  </div>
-
-  <div className="flex shrink-0 items-center gap-2">
-    <p className="text-xs font-bold text-[#927463]">
-      {remaining} voucher
-    </p>
-
-    <Button
-      type="button"
-      onClick={() => {
-        const yakin = window.confirm(
-          `Hapus ${room.name}? Semua nomor di ROOM ini akan ikut terhapus.`
-        )
-
-        if (yakin) {
-          removeRoom(room.id)
-          toast(`${room.name} berhasil dihapus`)
-        }
-      }}
-      variant="outline"
-      className="h-9 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold text-[#a15f4a]"
-    >
-      Hapus
-    </Button>
-  </div>
-</div>
-
-          <div className="space-y-2">
-            {slots.map((slot, index) => (
-              <div
-                key={index}
-                className="rounded-2xl border border-[#eadbd3] bg-[#fffaf7] p-3"
-              >
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-[#8b6b57]">
-                    NOMOR {index + 1}
-                  </span>
-
-                  <span className="text-[11px] font-bold text-[#927463]">
-                    {slot.number
-                      ? `${slot.usesLeft}/${USES_PER_NUMBER} voucher`
-                      : "Belum diisi"}
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={slot.number}
-                    onChange={(e) =>
-                      setSlotNumber(room.id, index, e.target.value)
-                    }
-                    placeholder="Masukkan nomor OTP"
-                    disabled={slot.used}
-                    className="min-w-[180px] flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
-                  />
-
-                  {slot.number && (
-                    <Button
-                      type="button"
-                      onClick={async () => {
-                        const ok = await copyText(slot.number)
-                        toast(
-                          ok
-                            ? "Nomor berhasil dicopy ☕"
-                            : "Gagal copy",
-                        )
-                      }}
-                      variant="outline"
-                      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
-                    >
-                      <Copy className="mr-1 h-4 w-4" />
-                      Copy
-                    </Button>
-                  )}
-
-                  {slot.number && !slot.used && (
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        const next = window.prompt(
-                          "Edit nomor OTP",
-                          slot.number,
-                        )
-
-                        if (next !== null) {
-                          setSlotNumber(room.id, index, next)
-                        }
-                      }}
-                      variant="outline"
-                      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
-                    >
-                      Edit
-                    </Button>
-                  )}
-
-                  {slot.number && (
-                    <Button
-                      type="button"
-                      onClick={() => clearSlot(room.id, index)}
-                      variant="outline"
-                      className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
-                    >
-                      Hapus
-                    </Button>
-                  )}
-                </div>
-
-                <div className="mt-3 grid grid-cols-3 gap-2">
-                  {VOUCHER_TYPES.map((voucherType) => {
-                    const checked = Boolean(
-                      slot.vouchers?.[voucherType],
+                <FinanceInput
+                  value={
+                    todayFinance?.roomBalance ??
+                    0
+                  }
+                  onSave={(value) =>
+                    setDailyFinance(
+                      today,
+                      "roomBalance",
+                      value,
                     )
-
-                    return (
-                      <button
-                        key={voucherType}
-                        type="button"
-                        onClick={() =>
-                          toggleVoucher(
-                            room.id,
-                            index,
-                            voucherType,
-                          )
-                        }
-                        disabled={!slot.number}
-                        className={
-                          "flex min-h-10 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition " +
-                          (checked
-                            ? "border-[#8b5e3c] bg-[#8b5e3c] text-white"
-                            : "border-[#eadbd3] bg-white text-[#8b6b57]")
-                        }
-                      >
-                        <span className="text-sm">
-                          {checked ? "☑" : "☐"}
-                        </span>
-                        {voucherType}
-                      </button>
-                    )
-                  })}
-                </div>
+                  }
+                  placeholder="Masukkan saldo awal"
+                />
               </div>
-            ))}
+
+              <div>
+                <label className="mb-1 block text-xs font-medium text-[#765542]">
+                  Pemasukan
+                </label>
+
+                <FinanceInput
+                  value={
+                    todayFinance?.income ??
+                    0
+                  }
+                  onSave={(value) =>
+                    setDailyFinance(
+                      today,
+                      "income",
+                      value,
+                    )
+                  }
+                  placeholder="Masukkan pemasukan"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-medium text-[#765542]">
+                  Modal OTP
+                </label>
+
+                <FinanceInput
+                  value={
+                    todayFinance?.otpCost ??
+                    0
+                  }
+                  onSave={(value) =>
+                    setDailyFinance(
+                      today,
+                      "otpCost",
+                      value,
+                    )
+                  }
+                  placeholder="Masukkan modal OTP"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-medium text-[#765542]">
+                  Pengeluaran
+                </label>
+
+                <FinanceInput
+                  value={
+                    todayFinance?.expenses ??
+                    0
+                  }
+                  onSave={(value) =>
+                    setDailyFinance(
+                      today,
+                      "expenses",
+                      value,
+                    )
+                  }
+                  placeholder="Masukkan pengeluaran"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-2xl bg-[#f8eee7] p-4 text-center">
+              <p className="text-xs font-medium text-[#8b6b57]">
+                SALDO AKHIR
+              </p>
+
+              <p className="mt-1 text-2xl font-bold text-[#6f4932]">
+                Rp{" "}
+                {formatRupiah(
+                  saldoAkhir,
+                )}
+              </p>
+            </div>
+          </Card>
+
+          {/* ROOM TITLE */}
+
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#6f4932]">
+              📱 ROOMS
+            </h2>
+
+            <Button
+              type="button"
+              onClick={addRoom}
+              className="h-9 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+            >
+              + Tambah ROOM
+            </Button>
           </div>
-        </Card>
-      </li>
-    )
-  })}
-</ul>
-     <p className="pt-2 text-center text-[11px] text-[#a1816f]">
+
+          {/* ROOMS */}
+
+          <ul className="space-y-3">
+            {rooms.map((room) => {
+              const slots =
+                data.rooms[room.id]
+
+              const remaining =
+                remainingUses(
+                  slots,
+                )
+
+              return (
+                <li
+                  key={room.id}
+                >
+                  <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+
+                    <div className="mb-3 flex items-center justify-between gap-2">
+
+                      <div className="min-w-0">
+                        <p className="font-serif text-lg font-bold text-[#5d3d2b]">
+                          {room.name}
+                        </p>
+
+                        <div className="mt-1 flex items-center gap-2">
+                          <PinBadge
+                            pin={roomPin(
+                              data,
+                              room.id,
+                            )}
+                            className="border-[#ead6ca] bg-[#fff7f2] text-[#79563f]"
+                          />
+
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              const next =
+                                window.prompt(
+                                  `PIN ${room.name}`,
+                                  roomPin(
+                                    data,
+                                    room.id,
+                                  ),
+                                )
+
+                              if (
+                                next !== null
+                              ) {
+                                setRoomPin(
+                                  room.id,
+                                  next,
+                                )
+
+                                toast(
+                                  `PIN ${room.name} berhasil disimpan`,
+                                )
+                              }
+                            }}
+                            variant="outline"
+                            className="h-7 rounded-lg border-[#e8d7cb] px-2 text-[11px] font-bold"
+                          >
+                            Edit PIN
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-2">
+                        <p className="text-xs font-bold text-[#927463]">
+                          {remaining} voucher
+                        </p>
+
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            const yakin =
+                              window.confirm(
+                                `Hapus ${room.name}? Semua nomor di ROOM ini akan ikut terhapus.`,
+                              )
+
+                            if (yakin) {
+                              removeRoom(
+                                room.id,
+                              )
+
+                              toast(
+                                `${room.name} berhasil dihapus`,
+                              )
+                            }
+                          }}
+                          variant="outline"
+                          className="h-9 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold text-[#a15f4a]"
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      {slots.map(
+                        (
+                          slot,
+                          index,
+                        ) => (
+                          <div
+                            key={index}
+                            className="rounded-2xl border border-[#eadbd3] bg-[#fffaf7] p-3"
+                          >
+                            <div className="mb-2 flex items-center justify-between gap-2">
+                              <span className="text-xs font-bold text-[#8b6b57]">
+                                NOMOR{" "}
+                                {index + 1}
+                              </span>
+
+                              <span className="text-[11px] font-bold text-[#927463]">
+                                {slot.number
+                                  ? `${slot.usesLeft}/${USES_PER_NUMBER} voucher`
+                                  : "Belum diisi"}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+
+                              <RoomNumberInput
+                                value={
+                                  slot.number
+                                }
+                                disabled={
+                                  slot.used
+                                }
+                                onSave={(
+                                  value,
+                                ) =>
+                                  setSlotNumber(
+                                    room.id,
+                                    index,
+                                    value,
+                                  )
+                                }
+                              />
+
+                              {slot.number && (
+                                <Button
+                                  type="button"
+                                  onClick={async () => {
+                                    const ok =
+                                      await copyText(
+                                        slot.number,
+                                      )
+
+                                    toast(
+                                      ok
+                                        ? "Nomor berhasil dicopy ☕"
+                                        : "Gagal copy",
+                                    )
+                                  }}
+                                  variant="outline"
+                                  className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+                                >
+                                  <Copy className="mr-1 h-4 w-4" />
+                                  Copy
+                                </Button>
+                              )}
+
+                              {slot.number &&
+                                !slot.used && (
+                                  <Button
+                                    type="button"
+                                    onClick={() => {
+                                      const next =
+                                        window.prompt(
+                                          "Edit nomor OTP",
+                                          slot.number,
+                                        )
+
+                                      if (
+                                        next !==
+                                        null
+                                      ) {
+                                        setSlotNumber(
+                                          room.id,
+                                          index,
+                                          next,
+                                        )
+                                      }
+                                    }}
+                                    variant="outline"
+                                    className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+                                  >
+                                    Edit
+                                  </Button>
+                                )}
+
+                              {slot.number && (
+                                <Button
+                                  type="button"
+                                  onClick={() =>
+                                    clearSlot(
+                                      room.id,
+                                      index,
+                                    )
+                                  }
+                                  variant="outline"
+                                  className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
+                                >
+                                  Hapus
+                                </Button>
+                              )}
+                            </div>
+
+                            <div className="mt-3 grid grid-cols-3 gap-2">
+                              {VOUCHER_TYPES.map(
+                                (
+                                  voucherType,
+                                ) => {
+                                  const checked =
+                                    Boolean(
+                                      slot
+                                        .vouchers?.[
+                                        voucherType
+                                      ],
+                                    )
+
+                                  return (
+                                    <button
+                                      key={
+                                        voucherType
+                                      }
+                                      type="button"
+                                      onClick={() =>
+                                        toggleVoucher(
+                                          room.id,
+                                          index,
+                                          voucherType,
+                                        )
+                                      }
+                                      disabled={
+                                        !slot.number
+                                      }
+                                      className={
+                                        "flex min-h-10 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition " +
+                                        (checked
+                                          ? "border-[#8b5e3c] bg-[#8b5e3c] text-white"
+                                          : "border-[#eadbd3] bg-white text-[#8b6b57]")
+                                      }
+                                    >
+                                      <span className="text-sm">
+                                        {checked
+                                          ? "☑"
+                                          : "☐"}
+                                      </span>
+
+                                      {
+                                        voucherType
+                                      }
+                                    </button>
+                                  )
+                                },
+                              )}
+                            </div>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </Card>
+                </li>
+              )
+            })}
+          </ul>
+
+          <p className="pt-2 text-center text-[11px] text-[#a1816f]">
             ☕ Jasdor by Esaashop · semangat cari cuan 🤎
           </p>
         </div>
@@ -504,4 +773,25 @@ const totalVouchers = rooms.reduce(
       {ToastView}
     </main>
   )
-            }
+}
+
+/* =========================================================
+   LOCAL DATE
+   ========================================================= */
+
+function getLocalDateKey(
+  date = new Date(),
+) {
+  const year =
+    date.getFullYear()
+
+  const month = String(
+    date.getMonth() + 1,
+  ).padStart(2, "0")
+
+  const day = String(
+    date.getDate(),
+  ).padStart(2, "0")
+
+  return `${year}-${month}-${day}`
+      }
