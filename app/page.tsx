@@ -3,6 +3,7 @@
 import Link from "next/link"
 import {
   useEffect,
+  useRef,
   useState,
 } from "react"
 import {
@@ -22,7 +23,6 @@ import {
 import { Button } from "@/components/ui/button"
 
 import {
-import {
   USES_PER_NUMBER,
   VOUCHER_TYPES,
   addRoom,
@@ -30,6 +30,7 @@ import {
   clearSlot,
   copyText,
   exportBackup,
+  importBackup,
   getRooms,
   remainingUses,
   roomPin,
@@ -171,6 +172,28 @@ export default function HomePage() {
   const { toast, ToastView } =
     useToast()
 
+    const fileInputRef =
+    useRef<HTMLInputElement>(null)
+
+  async function handleImport(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file =
+      event.target.files?.[0]
+
+    if (!file) return
+
+    const ok =
+      await importBackup(file)
+
+    toast(
+      ok
+        ? "Backup berhasil dipulihkan ☕"
+        : "File backup tidak valid",
+    )
+
+    event.target.value = ""
+  }
   const finance = data?.finance
 
   const today = getLocalDateKey()
