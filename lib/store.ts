@@ -714,7 +714,57 @@ export function setRoomPin(
     }
   })
 }
+export function setRoomName(
+  roomId: string,
+  name: string,
+) {
+  update((data) => {
+    if (!data.rooms[roomId]) {
+      return
+    }
 
+    const clean = name.trim().slice(0, 40)
+
+    data.roomNames[roomId] =
+      clean || "ROOM"
+  })
+}
+
+export function moveRoom(
+  roomId: string,
+  direction: "up" | "down",
+) {
+  update((data) => {
+    const index = data.roomOrder.indexOf(roomId)
+
+    if (index === -1) {
+      return
+    }
+
+    const newIndex =
+      direction === "up"
+        ? index - 1
+        : index + 1
+
+    if (
+      newIndex < 0 ||
+      newIndex >= data.roomOrder.length
+    ) {
+      return
+    }
+
+    const [moved] =
+      data.roomOrder.splice(index, 1)
+
+    data.roomOrder.splice(
+      newIndex,
+      0,
+      moved,
+    )
+  })
+}
+```
+                    
 /* ---------- finance ---------- */
 
 export function setDailyFinance(
