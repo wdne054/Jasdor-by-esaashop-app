@@ -13,6 +13,7 @@ import {
   unusedNumbers,
   useAppData,
   usedCount,
+  exportBackup
 } from "@/lib/store"
 
 export default function HomePage() {
@@ -111,7 +112,18 @@ export default function HomePage() {
             )
           })}
         </ul>
+            </div>
+
+      <div className="mt-4 flex justify-end">
+        <Button
+          type="button"
+          onClick={exportBackup}
+          className="rounded-xl bg-[#8b5e3c] px-4 py-2 text-sm font-bold text-white"
+        >
+          BACKUP DATA
+        </Button>
       </div>
+
       {ToastView}
     </main>
   )
