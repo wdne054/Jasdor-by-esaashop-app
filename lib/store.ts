@@ -556,6 +556,35 @@ export function exportBackup() {
 
   URL.revokeObjectURL(url)
   }
+export function importBackup(
+  file: File,
+): Promise<boolean> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(
+          String(reader.result),
+        )
+
+        const next = normalize(parsed)
+
+        write(next)
+
+        resolve(true)
+      } catch {
+        resolve(false)
+      }
+    }
+
+    reader.onerror = () => {
+      resolve(false)
+    }
+
+    reader.readAsText(file)
+  })
+}
 function update(
   fn: (draft: AppData) => void,
 ) {
