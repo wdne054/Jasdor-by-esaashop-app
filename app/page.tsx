@@ -346,33 +346,58 @@ export default function HomePage() {
             </div>
           </Card>
 
-                    {/* DATA BACKUP */}
+{/* DATA BACKUP */}
 
-          <Card className="border-white/80 bg-white/80 shadow-lg backdrop-blur">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#a8785a]">
-                  Data
-                </p>
+<Card className="border-white/80 bg-white/80 shadow-lg backdrop-blur">
+  <div className="flex items-center justify-between gap-3">
+    <div className="min-w-0">
+      <p className="text-xs font-bold uppercase tracking-wide text-[#a8785a]">
+        Data
+      </p>
 
-                <p className="font-serif text-lg font-bold text-[#5d3d2b]">
-                  Backup & Migrasi
-                </p>
+      <p className="font-serif text-lg font-bold text-[#5d3d2b]">
+        Backup & Migrasi
+      </p>
 
-                <p className="text-xs text-[#927463]">
-                  Simpan atau pindahkan data Jasdor
-                </p>
-              </div>
+      <p className="text-xs text-[#927463]">
+        Simpan atau pindahkan data Jasdor
+      </p>
+    </div>
 
-              <Button
-                type="button"
-                onClick={exportBackup}
-                className="h-10 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
-              >
-                Backup
-              </Button>
-            </div>
-          </Card>
+    <div className="flex shrink-0 gap-2">
+      <Button
+        type="button"
+        onClick={exportBackup}
+        className="h-10 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+      >
+        Backup
+      </Button>
+
+      <label className="cursor-pointer">
+        <input
+          type="file"
+          accept=".json,application/json"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0]
+
+            if (!file) {
+              return
+            }
+
+            importBackup(file)
+
+            event.currentTarget.value = ""
+          }}
+        />
+
+        <span className="flex h-10 items-center rounded-xl border border-[#8b5e3c] bg-white px-3 text-xs font-bold text-[#8b5e3c]">
+          Import
+        </span>
+      </label>
+    </div>
+  </div>
+</Card>
           {/* BAPERAN */}
 
           <Link
