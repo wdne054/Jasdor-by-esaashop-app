@@ -338,3 +338,23 @@ export async function copyText(text: string) {
     return false
   }
 }
+export function exportBackup() {
+  const data = read()
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" },
+  )
+
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+
+  link.href = url
+  link.download = `jasdor-backup-lama-${Date.now()}.json`
+
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+
+  URL.revokeObjectURL(url)
+}
