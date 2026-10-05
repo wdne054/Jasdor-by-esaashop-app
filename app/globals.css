@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
@@ -49,6 +49,11 @@
 }
 
 :root {
+  --cute-bg: #fff7f4;
+  --cute-pink: #c97891;
+  --cute-pink-light: #fde7ed;
+  --cute-brown: #6b4b57;
+
   color-scheme: light;
   --background: oklch(0.968 0.014 78);
   --foreground: oklch(0.26 0.035 55);
@@ -124,6 +129,9 @@
     @apply border-border outline-ring/50;
   }
   body {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  background: #fff7f4;
+
     @apply bg-background text-foreground;
   }
 }
