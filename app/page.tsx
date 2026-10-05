@@ -90,7 +90,7 @@ function RoomNumberInput({
       }}
       placeholder="Masukkan nomor OTP"
       disabled={disabled}
-      className="min-w-[180px] flex-1 rounded-xl border border-[#e8d7cb] bg-white px-3 py-2 text-sm outline-none"
+      className="min-w-[180px] flex-1 rounded-2xl border border-[#efdce2] bg-[#fffafd] px-3 py-2 text-sm font-medium outline-none focus:border-[#d995aa]"
     />
   )
 }
@@ -190,54 +190,58 @@ export default function HomePage() {
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed"
+      className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed text-[#624653]"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(255,247,242,0.35), rgba(255,247,242,0.35)), url('/jasdor-bg.jpg')",
+          "linear-gradient(135deg, rgba(255,244,247,0.78), rgba(255,250,242,0.70)), url('/jasdor-bg.jpg')",
       }}
     >
       <div className="mx-auto min-h-screen max-w-md">
+        <div className="pointer-events-none absolute right-3 top-3 text-2xl opacity-70">🎀</div>
+        <div className="pointer-events-none absolute left-3 top-28 text-lg opacity-60">✦</div>
 
         {/* HEADER */}
 
-        <header className="px-5 pb-4 pt-7">
+        <header className="px-4 pb-4 pt-5">
+          <div className="rounded-[28px] border border-white/80 bg-[#fff9f6]/90 p-3 shadow-[0_12px_35px_rgba(124,76,91,0.12)] backdrop-blur">
           <div className="flex items-center gap-3">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/70 bg-white/80 shadow-lg backdrop-blur">
-              <Coffee className="size-7 text-[#8b5e3c]" />
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-[20px] border border-[#f4d9df] bg-[#ffeef2] shadow-sm">
+              <Coffee className="size-7 text-[#b66b82]" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a8785a]">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#b66b82]">
                 coffee time ☕
               </p>
 
-              <h1 className="font-serif text-2xl font-bold text-[#5d3d2b]">
+              <h1 className="font-serif text-[26px] font-extrabold tracking-tight text-[#684957]">
                 Jasdor by Esaashop
               </h1>
 
-              <p className="text-sm text-[#927463]">
+              <p className="text-sm font-medium text-[#927080]">
                 Semangat jasdor hari ini 🤎
               </p>
             </div>
           </div>
+        </div>
         </header>
 
         <div className="space-y-4 px-4 pb-10">
 
           {/* SUMMARY */}
 
-          <Card className="border-white/80 bg-white/80 shadow-lg backdrop-blur">
+          <Card className="border-white/85 bg-[#fffaf9]/90 shadow-[0_10px_28px_rgba(124,76,91,0.10)] backdrop-blur">
             <div className="flex items-center gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#f3ded2]">
-                <Sparkles className="size-6 text-[#9b6949]" />
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-[18px] bg-[#fce2e9]">
+                <Sparkles className="size-6 text-[#b66b82]" />
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#a8785a]">
+                <p className="text-xs font-extrabold uppercase tracking-wide text-[#b66b82]">
                   Siap jasdor
                 </p>
 
-                <p className="font-serif text-2xl font-bold text-[#5d3d2b]">
+                <p className="font-serif text-2xl font-extrabold text-[#684957]">
                   {totalVouchers} voucher
                 </p>
 
@@ -249,7 +253,7 @@ export default function HomePage() {
 
               <Button
                 onClick={copyAll}
-                className="h-11 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+                className="h-11 rounded-2xl bg-[#b66b82] px-4 text-xs font-extrabold text-white shadow-sm"
               >
                 <Copy className="size-4" />
                 Copy
@@ -279,7 +283,7 @@ export default function HomePage() {
       <Button
         type="button"
         onClick={exportBackup}
-        className="h-10 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+        className="h-10 rounded-2xl bg-[#b66b82] px-3 text-xs font-extrabold text-white shadow-sm"
       >
         Backup
       </Button>
@@ -302,7 +306,7 @@ export default function HomePage() {
           }}
         />
 
-        <span className="flex h-10 items-center rounded-xl border border-[#8b5e3c] bg-white px-3 text-xs font-bold text-[#8b5e3c]">
+        <span className="flex h-10 items-center rounded-2xl border border-[#d79aaa] bg-[#fffafd] px-3 text-xs font-extrabold text-[#a95f77]">
           Import
         </span>
       </label>
@@ -316,17 +320,17 @@ export default function HomePage() {
             className="block"
           >
             <Card className="flex items-center gap-3 border-white/80 bg-white/85 shadow-lg backdrop-blur">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#c98767] text-white">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-[18px] bg-[#d889a0] text-white shadow-sm">
                 <Coffee className="size-6" />
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-serif text-xl font-bold text-[#5d3d2b]">
+                  <p className="font-serif text-xl font-extrabold text-[#684957]">
                     BAPERAN
                   </p>
 
-                  <span className="rounded-full bg-[#f1d2c3] px-2 py-0.5 text-[10px] font-bold text-[#80563e]">
+                  <span className="rounded-full bg-[#f8dce4] px-2 py-0.5 text-[10px] font-extrabold text-[#a55f76]">
                     EXTRA
                   </span>
                 </div>
@@ -336,21 +340,21 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <ChevronRight className="size-5 text-[#a8785a]" />
+              <ChevronRight className="size-5 text-[#b66b82]" />
             </Card>
           </Link>
 
           {/* ROOM TITLE */}
 
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-[#6f4932]">
+          <div className="mb-3 flex items-center justify-between rounded-2xl bg-[#fff7fa]/80 px-3 py-2">
+            <h2 className="text-lg font-extrabold text-[#684957]">
               📱 ROOMS
             </h2>
 
             <Button
               type="button"
               onClick={addRoom}
-              className="h-9 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+              className="h-9 rounded-2xl bg-[#b66b82] px-3 text-xs font-extrabold text-white shadow-sm"
             >
               + Tambah ROOM
             </Button>
@@ -462,10 +466,10 @@ export default function HomePage() {
                         ) => (
                           <div
                             key={index}
-                            className="rounded-2xl border border-[#eadbd3] bg-[#fffaf7] p-3"
+                            className="rounded-[22px] border border-[#f0dfe4] bg-[#fffdfc]/95 p-3 shadow-sm"
                           >
                             <div className="mb-2 flex items-center justify-between gap-2">
-                              <span className="text-xs font-bold text-[#8b6b57]">
+                              <span className="text-xs font-extrabold text-[#956a79]">
                                 NOMOR{" "}
                                 {index + 1}
                               </span>
@@ -598,8 +602,8 @@ export default function HomePage() {
                                       className={
                                         "flex min-h-10 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition " +
                                         (checked
-                                          ? "border-[#8b5e3c] bg-[#8b5e3c] text-white"
-                                          : "border-[#eadbd3] bg-white text-[#8b6b57]")
+                                          ? "border-[#b66b82] bg-[#b66b82] text-white"
+                                          : "border-[#efdfe4] bg-white text-[#8f6574]")
                                       }
                                     >
                                       <span className="text-sm">
@@ -626,7 +630,7 @@ export default function HomePage() {
             })}
           </ul>
 
-          <p className="pt-2 text-center text-[11px] text-[#a1816f]">
+          <p className="pt-3 text-center text-[11px] font-medium text-[#a37d8b]">
             ☕ Jasdor by Esaashop · semangat cari cuan 🤎
           </p>
         </div>
