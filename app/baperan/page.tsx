@@ -225,7 +225,7 @@ export default function BaperanPage() {
 
       <div className="space-y-3 px-4 pt-4">
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border bg-card p-4">
+          <div className="rounded-2xl border bg-card p-4 text-[#5a3828]">
             <p className="text-muted-foreground text-xs">
               Belum dipakai
             </p>
@@ -327,7 +327,7 @@ export default function BaperanPage() {
                   setShowAdd(false)
                   setError("")
                 }}
-                className="h-11 flex-1 rounded-xl border font-semibold"
+                className="h-11 flex-1 rounded-xl bg-primary font-semibold text-primary-foreground"
               >
                 Batal
               </button>
@@ -357,7 +357,7 @@ export default function BaperanPage() {
 
           <div className="space-y-3">
             {available.length === 0 ? (
-              <div className="rounded-2xl border bg-card p-6 text-center">
+              <div className="rounded-2xl border bg-card p-6 text-center text-[#5a3828]">
                 <Coffee className="mx-auto size-8 opacity-50" />
                 <p className="mt-2 font-semibold">
                   Tidak ada nomor yang belum dipakai
@@ -400,7 +400,7 @@ export default function BaperanPage() {
                       onClick={() =>
                         navigator.clipboard.writeText(item.number)
                       }
-                      className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border font-bold"
+                      className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary font-bold text-primary-foreground shadow-sm"
                     >
                       <Copy className="size-4" />
                       COPY
@@ -444,7 +444,7 @@ export default function BaperanPage() {
               used.map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-2xl border bg-card p-4 opacity-70"
+                  className="rounded-2xl border bg-card p-4 text-[#5a3828] opacity-70"
                 >
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1">
