@@ -193,7 +193,7 @@ export default function HomePage() {
       className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed text-[#624653]"
       style={{
         backgroundImage:
-          "linear-gradient(135deg, rgba(255,244,247,0.78), rgba(255,250,242,0.70)), url('/jasdor-bg.jpg')",
+          "linear-gradient(135deg, rgba(255,244,247,0.90), rgba(255,250,242,0.86)), url('/jasdor-bg.jpg')",
       }}
     >
       <div className="mx-auto min-h-screen max-w-md">
@@ -203,7 +203,7 @@ export default function HomePage() {
         {/* HEADER */}
 
         <header className="px-4 pb-4 pt-5">
-          <div className="rounded-[28px] border border-white/80 bg-[#fff9f6]/90 p-3 shadow-[0_12px_35px_rgba(124,76,91,0.12)] backdrop-blur">
+          <div className="rounded-[28px] border border-white/80 bg-[#fff9f6]/96 p-3 shadow-[0_12px_35px_rgba(124,76,91,0.12)] backdrop-blur">
           <div className="flex items-center gap-3">
             <div className="flex size-14 shrink-0 items-center justify-center rounded-[20px] border border-[#f4d9df] bg-[#ffeef2] shadow-sm">
               <Coffee className="size-7 text-[#b66b82]" />
@@ -230,7 +230,7 @@ export default function HomePage() {
 
           {/* SUMMARY */}
 
-          <Card className="border-white/85 bg-[#fffaf9]/90 shadow-[0_10px_28px_rgba(124,76,91,0.10)] backdrop-blur">
+          <Card className="border-white/85 bg-[#fffaf9]/97 shadow-[0_10px_28px_rgba(124,76,91,0.10)] backdrop-blur">
             <div className="flex items-center gap-3">
               <div className="flex size-12 shrink-0 items-center justify-center rounded-[18px] bg-[#fce2e9]">
                 <Sparkles className="size-6 text-[#b66b82]" />
@@ -263,7 +263,7 @@ export default function HomePage() {
 
 {/* DATA BACKUP */}
 
-<Card className="border-white/80 bg-white/80 shadow-lg backdrop-blur">
+<Card className="border-white/80 bg-[#fffdfb]/96 shadow-lg backdrop-blur">
   <div className="flex items-center justify-between gap-3">
     <div className="min-w-0">
       <p className="text-xs font-bold uppercase tracking-wide text-[#a8785a]">
@@ -319,7 +319,7 @@ export default function HomePage() {
             href="/baperan"
             className="block"
           >
-            <Card className="flex items-center gap-3 border-white/80 bg-white/85 shadow-lg backdrop-blur">
+            <Card className="flex items-center gap-3 border-white/80 bg-[#fffdfc]/96 shadow-lg backdrop-blur">
               <div className="flex size-12 shrink-0 items-center justify-center rounded-[18px] bg-[#d889a0] text-white shadow-sm">
                 <Coffee className="size-6" />
               </div>
@@ -376,7 +376,7 @@ export default function HomePage() {
                 <li
                   key={room.id}
                 >
-                  <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+                  <Card className="border-white/80 bg-[#fffdfc]/96 shadow-lg backdrop-blur">
 
                     <div className="mb-3 flex items-center justify-between gap-2">
 
