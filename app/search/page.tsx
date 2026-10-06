@@ -14,7 +14,7 @@ export default function SearchPage() {
   const results =
     data && q
       ? rooms.flatMap((room) =>
-          data.rooms[room.id]
+          (data.rooms[room.id] ?? [])
             .map((slot, i) => ({ room, slot, index: i }))
             .filter(
               ({ slot }) =>
@@ -26,7 +26,7 @@ export default function SearchPage() {
   const historyHits =
     data && q
       ? data.history.filter(
-          (h) => h.number.toLowerCase().includes(q) || h.buyer.toLowerCase().includes(q),
+          (h) => String(h.number ?? "").toLowerCase().includes(q) || String(h.buyer ?? "").toLowerCase().includes(q),
         )
       : []
 
