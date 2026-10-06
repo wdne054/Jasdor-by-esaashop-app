@@ -3,16 +3,17 @@
 import Link from "next/link"
 import { useState } from "react"
 import { AppHeader, Card, Field } from "@/components/app-ui"
-import { ROOMS, USES_PER_NUMBER, formatTime, roomPin, useAppData, usesLabel } from "@/lib/store"
+import { USES_PER_NUMBER, formatTime, getRooms, roomPin, useAppData, usesLabel } from "@/lib/store"
 
 export default function SearchPage() {
   const data = useAppData()
   const [query, setQuery] = useState("")
   const q = query.trim().toLowerCase()
+  const rooms = getRooms(data)
 
   const results =
     data && q
-      ? ROOMS.flatMap((room) =>
+      ? rooms.flatMap((room) =>
           data.rooms[room.id]
             .map((slot, i) => ({ room, slot, index: i }))
             .filter(
