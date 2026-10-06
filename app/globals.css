@@ -55,12 +55,12 @@
   --cute-brown: #593b49;
 
   color-scheme: light;
-  --background: oklch(0.968 0.014 78);
-  --foreground: oklch(0.31 0.045 55);
-  --card: oklch(0.995 0.006 80);
-  --card-foreground: oklch(0.31 0.045 55);
-  --popover: oklch(0.995 0.006 80);
-  --popover-foreground: oklch(0.31 0.045 55);
+  --background: #7b523d;
+  --foreground: #fff8f2;
+  --card: #fffaf6;
+  --card-foreground: #5a3828;
+  --popover: #fffaf6;
+  --popover-foreground: #5a3828;
   --primary: oklch(0.44 0.075 48);
   --primary-foreground: oklch(0.98 0.012 80);
   --secondary: oklch(0.925 0.026 76);
