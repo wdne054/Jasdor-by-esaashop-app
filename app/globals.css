@@ -50,17 +50,17 @@
 
 :root {
   --cute-bg: #fff7f4;
-  --cute-pink: #c97891;
-  --cute-pink-light: #fde7ed;
-  --cute-brown: #6b4b57;
+  --cute-pink: #b85f7d;
+  --cute-pink-light: #f6d5df;
+  --cute-brown: #593b49;
 
   color-scheme: light;
   --background: oklch(0.968 0.014 78);
-  --foreground: oklch(0.26 0.035 55);
+  --foreground: oklch(0.31 0.045 55);
   --card: oklch(0.995 0.006 80);
-  --card-foreground: oklch(0.26 0.035 55);
+  --card-foreground: oklch(0.31 0.045 55);
   --popover: oklch(0.995 0.006 80);
-  --popover-foreground: oklch(0.26 0.035 55);
+  --popover-foreground: oklch(0.31 0.045 55);
   --primary: oklch(0.44 0.075 48);
   --primary-foreground: oklch(0.98 0.012 80);
   --secondary: oklch(0.925 0.026 76);
@@ -151,14 +151,14 @@
 
   button:not(:disabled):focus-visible,
   [role="button"]:focus-visible {
-    outline: 3px solid rgba(201, 120, 145, 0.32);
+    outline: 3px solid rgba(184, 95, 125, 0.38);
     outline-offset: 2px;
   }
 
   input:focus,
   textarea:focus,
   select:focus {
-    border-color: #c97891 !important;
-    box-shadow: 0 0 0 3px rgba(201, 120, 145, 0.16);
+    border-color: #b85f7d !important;
+    box-shadow: 0 0 0 3px rgba(184, 95, 125, 0.20);
   }
 }
