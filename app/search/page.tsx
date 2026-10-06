@@ -46,7 +46,7 @@ export default function SearchPage() {
           <p className="text-muted-foreground px-1 text-sm">Ketik untuk mulai mencari.</p>
         ) : (
           <>
-            <p className="text-muted-foreground px-1 text-sm font-semibold">
+            <p className="px-1 text-sm font-bold text-[#6f4932]">
               Di room ({results.length})
             </p>
             {results.length === 0 ? (
@@ -58,8 +58,8 @@ export default function SearchPage() {
                 {results.map(({ room, slot, index }) => (
                   <li key={`${room.id}-${index}`}>
                     <Link href={`/room/${room.id}`}>
-                      <Card>
-                        <p className="font-mono text-base font-semibold">{slot.number}</p>
+                      <Card className="text-[#5a3828]">
+                        <p className="font-mono text-base font-bold text-[#5a3828]">{slot.number}</p>
                         <p className="text-muted-foreground text-xs">
                           {room.name} · PIN {roomPin(data, room.id)} · slot {index + 1} ·{" "}
                           {usesLabel(slot)}
@@ -72,7 +72,7 @@ export default function SearchPage() {
               </ul>
             )}
 
-            <p className="text-muted-foreground px-1 pt-2 text-sm font-semibold">
+            <p className="px-1 pt-2 text-sm font-bold text-[#6f4932]">
               Di riwayat ({historyHits.length})
             </p>
             {historyHits.length === 0 ? (
@@ -83,8 +83,8 @@ export default function SearchPage() {
               <ul className="space-y-2">
                 {historyHits.map((h) => (
                   <li key={h.id}>
-                    <Card>
-                      <p className="font-mono text-base font-semibold">{h.number}</p>
+                    <Card className="text-[#5a3828]">
+                      <p className="font-mono text-base font-bold text-[#5a3828]">{h.number}</p>
                       <p className="text-muted-foreground text-xs">
                         {h.roomName} · slot {h.slot} · pakai ke-{h.useNo}/{USES_PER_NUMBER} ·{" "}
                         {formatTime(h.at)}
