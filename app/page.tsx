@@ -190,32 +190,32 @@ export default function HomePage() {
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed"
+      className="relative min-h-screen overflow-hidden bg-cover bg-center bg-fixed text-[#6b4a36]"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(255,247,242,0.35), rgba(255,247,242,0.35)), url('/jasdor-bg.jpg')",
+          "linear-gradient(rgba(255,247,242,0.48), rgba(255,247,242,0.48)), url('/jasdor-bg.jpg')",
       }}
     >
       <div className="mx-auto min-h-screen max-w-md">
 
         {/* HEADER */}
 
-        <header className="px-5 pb-4 pt-7">
+        <header className="px-5 pb-5 pt-8">
           <div className="flex items-center gap-3">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/70 bg-white/80 shadow-lg backdrop-blur">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-full border border-white/80 bg-white/90 shadow-lg backdrop-blur">
               <Coffee className="size-7 text-[#8b5e3c]" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a8785a]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#a8785a]">
                 coffee time ☕
               </p>
 
-              <h1 className="font-serif text-2xl font-bold text-[#5d3d2b]">
+              <h1 className="font-serif text-[26px] font-bold tracking-tight text-[#5d3d2b]">
                 Jasdor by Esaashop
               </h1>
 
-              <p className="text-sm text-[#927463]">
+              <p className="text-sm font-medium text-[#927463]">
                 Semangat jasdor hari ini 🤎
               </p>
             </div>
@@ -226,9 +226,9 @@ export default function HomePage() {
 
           {/* SUMMARY */}
 
-          <Card className="border-white/80 bg-white/80 shadow-lg backdrop-blur">
+          <Card className="border-white/80 bg-white/88 shadow-lg backdrop-blur">
             <div className="flex items-center gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#f3ded2]">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-[20px] bg-[#f3ded2]">
                 <Sparkles className="size-6 text-[#9b6949]" />
               </div>
 
@@ -237,7 +237,7 @@ export default function HomePage() {
                   Siap jasdor
                 </p>
 
-                <p className="font-serif text-2xl font-bold text-[#5d3d2b]">
+                <p className="font-serif text-[26px] font-bold tracking-tight text-[#5d3d2b]">
                   {totalVouchers} voucher
                 </p>
 
@@ -249,7 +249,7 @@ export default function HomePage() {
 
               <Button
                 onClick={copyAll}
-                className="h-11 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+                className="h-11 rounded-full bg-[#8b5e3c] px-4 text-xs font-bold text-white shadow-sm"
               >
                 <Copy className="size-4" />
                 Copy
@@ -259,7 +259,7 @@ export default function HomePage() {
 
 {/* DATA BACKUP */}
 
-<Card className="border-white/80 bg-white/80 shadow-lg backdrop-blur">
+<Card className="border-white/80 bg-white/88 shadow-lg backdrop-blur">
   <div className="flex items-center justify-between gap-3">
     <div className="min-w-0">
       <p className="text-xs font-bold uppercase tracking-wide text-[#a8785a]">
@@ -316,7 +316,7 @@ export default function HomePage() {
             className="block"
           >
             <Card className="flex items-center gap-3 border-white/80 bg-white/85 shadow-lg backdrop-blur">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#c98767] text-white">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#c98767] text-white shadow-sm">
                 <Coffee className="size-6" />
               </div>
 
@@ -342,7 +342,7 @@ export default function HomePage() {
 
           {/* ROOM TITLE */}
 
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex items-center justify-between px-1">
             <h2 className="text-lg font-bold text-[#6f4932]">
               📱 ROOMS
             </h2>
@@ -350,7 +350,7 @@ export default function HomePage() {
             <Button
               type="button"
               onClick={addRoom}
-              className="h-9 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+              className="h-10 rounded-full bg-[#8b5e3c] px-4 text-xs font-bold text-white shadow-sm"
             >
               + Tambah ROOM
             </Button>
@@ -372,7 +372,7 @@ export default function HomePage() {
                 <li
                   key={room.id}
                 >
-                  <Card className="border-white/80 bg-white/85 shadow-lg backdrop-blur">
+                  <Card className="border-white/80 bg-white/88 shadow-lg backdrop-blur">
 
                     <div className="mb-3 flex items-center justify-between gap-2">
 
@@ -416,7 +416,7 @@ export default function HomePage() {
                               }
                             }}
                             variant="outline"
-                            className="h-7 rounded-lg border-[#e8d7cb] px-2 text-[11px] font-bold"
+                            className="h-9 rounded-full border-[#e8d7cb] bg-white/70 px-3 text-xs font-bold"
                           >
                             Edit PIN
                           </Button>
@@ -447,7 +447,7 @@ export default function HomePage() {
                             }
                           }}
                           variant="outline"
-                          className="h-9 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold text-[#a15f4a]"
+                          className="h-10 rounded-full border-[#e8d7cb] bg-white/70 px-4 text-xs font-bold text-[#8b5e3c]"
                         >
                           Hapus
                         </Button>
@@ -462,7 +462,7 @@ export default function HomePage() {
                         ) => (
                           <div
                             key={index}
-                            className="rounded-2xl border border-[#eadbd3] bg-[#fffaf7] p-3"
+                            className="rounded-[26px] border border-[#eadbd3] bg-[#fffaf7]/95 p-3 shadow-sm"
                           >
                             <div className="mb-2 flex items-center justify-between gap-2">
                               <span className="text-xs font-bold text-[#8b6b57]">
@@ -513,7 +513,7 @@ export default function HomePage() {
                                     )
                                   }}
                                   variant="outline"
-                                  className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+                                  className="h-10 rounded-full border-[#e8d7cb] bg-white/75 px-4 text-xs font-bold"
                                 >
                                   <Copy className="mr-1 h-4 w-4" />
                                   Copy
@@ -543,7 +543,7 @@ export default function HomePage() {
                                       }
                                     }}
                                     variant="outline"
-                                    className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs font-bold"
+                                    className="h-10 rounded-full border-[#e8d7cb] bg-white/75 px-4 text-xs font-bold"
                                   >
                                     Edit
                                   </Button>
@@ -559,7 +559,7 @@ export default function HomePage() {
                                     )
                                   }
                                   variant="outline"
-                                  className="h-10 rounded-xl border-[#e8d7cb] px-3 text-xs"
+                                  className="h-10 rounded-full border-[#e8d7cb] bg-white/75 px-4 text-xs"
                                 >
                                   Hapus
                                 </Button>
@@ -596,10 +596,10 @@ export default function HomePage() {
                                         !slot.number
                                       }
                                       className={
-                                        "flex min-h-10 items-center justify-center gap-1 rounded-xl border px-2 text-xs font-bold transition " +
+                                        "flex min-h-10 items-center justify-center gap-1 rounded-full border px-2 text-xs font-bold transition " +
                                         (checked
-                                          ? "border-[#8b5e3c] bg-[#8b5e3c] text-white"
-                                          : "border-[#eadbd3] bg-white text-[#8b6b57]")
+                                          ? "border-[#8b5e3c] bg-[#8b5e3c] text-white shadow-sm"
+                                          : "border-[#eadbd3] bg-white/80 text-[#8b6b57]")
                                       }
                                     >
                                       <span className="text-sm">
