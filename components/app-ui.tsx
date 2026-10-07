@@ -34,7 +34,7 @@ export function Card({ className, children }: { className?: string; children: Re
   return (
     <div
       className={cn(
-        "bg-card border-border rounded-2xl border p-4 shadow-sm shadow-black/5",
+        "bg-card border-border rounded-[30px] border p-5 shadow-sm shadow-black/5",
         className,
       )}
     >
@@ -109,7 +109,7 @@ export function Field({
       <input
         {...props}
         className={cn(
-          "bg-background border-border placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-ring/40 h-12 w-full rounded-xl border px-3 text-base outline-none focus-visible:ring-3",
+          "bg-background border-border placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-ring/40 h-12 w-full rounded-2xl border px-4 text-base outline-none focus-visible:ring-3",
           className,
         )}
       />
