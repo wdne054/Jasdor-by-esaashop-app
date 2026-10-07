@@ -266,7 +266,7 @@ export default function HomePage() {
         Data
       </p>
 
-      <p className="font-serif text-xl font-bold text-[#5d3d2b]">
+      <p className="font-serif text-2xl font-bold text-[#5d3d2b]">
         Backup & Migrasi
       </p>
 
@@ -279,7 +279,7 @@ export default function HomePage() {
       <Button
         type="button"
         onClick={exportBackup}
-        className="h-11 rounded-full bg-[#8b5e3c] px-4 text-xs font-bold text-white shadow-sm"
+        className="h-12 rounded-full bg-[#8b5e3c] px-5 text-sm font-bold text-white shadow-sm"
       >
         Backup
       </Button>
@@ -377,7 +377,7 @@ export default function HomePage() {
                     <div className="mb-3 flex items-center justify-between gap-2">
 
                       <div className="min-w-0">
-                        <p className="font-serif text-xl font-bold text-[#5d3d2b]">
+                        <p className="font-serif text-2xl font-bold text-[#5d3d2b]">
                           {room.name}
                         </p>
 
