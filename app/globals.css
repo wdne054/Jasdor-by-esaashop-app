@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
@@ -6,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Fredoka', 'Nunito', sans-serif;
-  --font-serif: 'Fredoka', 'Nunito', sans-serif;
+  --font-sans: 'Nunito', 'Nunito Fallback';
+  --font-serif: 'Fraunces', 'Fraunces Fallback';
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,18 +48,13 @@
 }
 
 :root {
-  --cute-bg: #fff7f4;
-  --cute-pink: #b85f7d;
-  --cute-pink-light: #f6d5df;
-  --cute-brown: #593b49;
-
   color-scheme: light;
-  --background: #fff7f4;
-  --foreground: #5a3828;
-  --card: #fffaf6;
-  --card-foreground: #5a3828;
-  --popover: #fffaf6;
-  --popover-foreground: #5a3828;
+  --background: oklch(0.968 0.014 78);
+  --foreground: oklch(0.26 0.035 55);
+  --card: oklch(0.995 0.006 80);
+  --card-foreground: oklch(0.26 0.035 55);
+  --popover: oklch(0.995 0.006 80);
+  --popover-foreground: oklch(0.26 0.035 55);
   --primary: oklch(0.44 0.075 48);
   --primary-foreground: oklch(0.98 0.012 80);
   --secondary: oklch(0.925 0.026 76);
@@ -129,36 +123,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    font-family: 'Fredoka', 'Nunito', sans-serif;
-    background: #fff7f4;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-
     @apply bg-background text-foreground;
-  }
-
-  /* Cute, tapi tetap tegas saat disentuh/difokuskan. */
-  button,
-  [role="button"] {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  button:not(:disabled):active,
-  [role="button"]:not([aria-disabled="true"]):active {
-    filter: brightness(0.92) saturate(1.08);
-    transform: translateY(1px) scale(0.985);
-  }
-
-  button:not(:disabled):focus-visible,
-  [role="button"]:focus-visible {
-    outline: 3px solid rgba(184, 95, 125, 0.38);
-    outline-offset: 2px;
-  }
-
-  input:focus,
-  textarea:focus,
-  select:focus {
-    border-color: #b85f7d !important;
-    box-shadow: 0 0 0 3px rgba(184, 95, 125, 0.20);
   }
 }
