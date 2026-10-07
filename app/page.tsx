@@ -200,35 +200,35 @@ export default function HomePage() {
 
         {/* HEADER */}
 
-        <header className="px-5 pb-5 pt-8">
+        <header className="px-5 pb-6 pt-9">
           <div className="flex items-center gap-3">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-full border border-white/80 bg-white/90 shadow-lg backdrop-blur">
-              <Coffee className="size-7 text-[#8b5e3c]" />
+            <div className="flex size-[68px] shrink-0 items-center justify-center rounded-full border border-white/80 bg-white/90 shadow-md backdrop-blur">
+              <Coffee className="size-8 text-[#8b5e3c]" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#a8785a]">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#a8785a]">
                 coffee time ☕
               </p>
 
-              <h1 className="font-serif text-[26px] font-bold tracking-tight text-[#5d3d2b]">
+              <h1 className="font-serif text-[30px] font-bold leading-none tracking-tight text-[#5d3d2b]">
                 Jasdor by Esaashop
               </h1>
 
-              <p className="text-sm font-medium text-[#927463]">
+              <p className="mt-1 text-[15px] font-medium text-[#927463]">
                 Semangat jasdor hari ini 🤎
               </p>
             </div>
           </div>
         </header>
 
-        <div className="space-y-4 px-4 pb-10">
+        <div className="space-y-5 px-4 pb-10">
 
           {/* SUMMARY */}
 
-          <Card className="border-white/80 bg-white/88 shadow-lg backdrop-blur">
+          <Card className="rounded-[30px] border-white/80 bg-white/88 p-5 shadow-lg backdrop-blur">
             <div className="flex items-center gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-[20px] bg-[#f3ded2]">
+              <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[#f3ded2]">
                 <Sparkles className="size-6 text-[#9b6949]" />
               </div>
 
@@ -237,11 +237,11 @@ export default function HomePage() {
                   Siap jasdor
                 </p>
 
-                <p className="font-serif text-[26px] font-bold tracking-tight text-[#5d3d2b]">
+                <p className="font-serif text-[30px] font-bold leading-none tracking-tight text-[#5d3d2b]">
                   {totalVouchers} voucher
                 </p>
 
-                <p className="text-xs text-[#927463]">
+                <p className="text-sm text-[#927463]">
                   {allUnused.length} nomor aktif ·{" "}
                   {totalUsed} nomor habis
                 </p>
@@ -249,7 +249,7 @@ export default function HomePage() {
 
               <Button
                 onClick={copyAll}
-                className="h-11 rounded-full bg-[#8b5e3c] px-4 text-xs font-bold text-white shadow-sm"
+                className="h-12 rounded-full bg-[#8b5e3c] px-5 text-sm font-bold text-white shadow-sm"
               >
                 <Copy className="size-4" />
                 Copy
@@ -259,18 +259,18 @@ export default function HomePage() {
 
 {/* DATA BACKUP */}
 
-<Card className="border-white/80 bg-white/88 shadow-lg backdrop-blur">
+<Card className="rounded-[30px] border-white/80 bg-white/88 p-5 shadow-lg backdrop-blur">
   <div className="flex items-center justify-between gap-3">
     <div className="min-w-0">
       <p className="text-xs font-bold uppercase tracking-wide text-[#a8785a]">
         Data
       </p>
 
-      <p className="font-serif text-lg font-bold text-[#5d3d2b]">
+      <p className="font-serif text-xl font-bold text-[#5d3d2b]">
         Backup & Migrasi
       </p>
 
-      <p className="text-xs text-[#927463]">
+      <p className="text-sm text-[#927463]">
         Simpan atau pindahkan data Jasdor
       </p>
     </div>
@@ -279,7 +279,7 @@ export default function HomePage() {
       <Button
         type="button"
         onClick={exportBackup}
-        className="h-10 rounded-xl bg-[#8b5e3c] px-3 text-xs font-bold text-white"
+        className="h-11 rounded-full bg-[#8b5e3c] px-4 text-xs font-bold text-white shadow-sm"
       >
         Backup
       </Button>
@@ -302,7 +302,7 @@ export default function HomePage() {
           }}
         />
 
-        <span className="flex h-10 items-center rounded-xl border border-[#8b5e3c] bg-white px-3 text-xs font-bold text-[#8b5e3c]">
+        <span className="flex h-11 items-center rounded-full border border-[#8b5e3c] bg-white/80 px-4 text-xs font-bold text-[#8b5e3c]">
           Import
         </span>
       </label>
@@ -316,13 +316,13 @@ export default function HomePage() {
             className="block"
           >
             <Card className="flex items-center gap-3 border-white/80 bg-white/85 shadow-lg backdrop-blur">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#c98767] text-white shadow-sm">
+              <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[#c98767] text-white shadow-sm">
                 <Coffee className="size-6" />
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-serif text-xl font-bold text-[#5d3d2b]">
+                  <p className="font-serif text-2xl font-bold text-[#5d3d2b]">
                     BAPERAN
                   </p>
 
@@ -343,14 +343,14 @@ export default function HomePage() {
           {/* ROOM TITLE */}
 
           <div className="mb-3 flex items-center justify-between px-1">
-            <h2 className="text-lg font-bold text-[#6f4932]">
+            <h2 className="text-[22px] font-bold text-[#6f4932]">
               📱 ROOMS
             </h2>
 
             <Button
               type="button"
               onClick={addRoom}
-              className="h-10 rounded-full bg-[#8b5e3c] px-4 text-xs font-bold text-white shadow-sm"
+              className="h-11 rounded-full bg-[#8b5e3c] px-5 text-sm font-bold text-white shadow-sm"
             >
               + Tambah ROOM
             </Button>
@@ -372,12 +372,12 @@ export default function HomePage() {
                 <li
                   key={room.id}
                 >
-                  <Card className="border-white/80 bg-white/88 shadow-lg backdrop-blur">
+                  <Card className="rounded-[30px] border-white/80 bg-white/88 p-5 shadow-lg backdrop-blur">
 
                     <div className="mb-3 flex items-center justify-between gap-2">
 
                       <div className="min-w-0">
-                        <p className="font-serif text-lg font-bold text-[#5d3d2b]">
+                        <p className="font-serif text-xl font-bold text-[#5d3d2b]">
                           {room.name}
                         </p>
 
@@ -462,7 +462,7 @@ export default function HomePage() {
                         ) => (
                           <div
                             key={index}
-                            className="rounded-[26px] border border-[#eadbd3] bg-[#fffaf7]/95 p-3 shadow-sm"
+                            className="rounded-[24px] border border-[#eadbd3] bg-[#fffaf7]/95 p-3 shadow-sm"
                           >
                             <div className="mb-2 flex items-center justify-between gap-2">
                               <span className="text-xs font-bold text-[#8b6b57]">
