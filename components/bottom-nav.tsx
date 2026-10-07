@@ -27,7 +27,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navigasi utama"
-      className="bg-card/95 border-border fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur"
+      className="bg-[#fffaf6]/95 border-[#eadbd3] fixed inset-x-0 bottom-0 z-40 border-t shadow-[0_-4px_18px_rgba(91,61,43,0.08)] backdrop-blur"
     >
       <ul className="mx-auto flex max-w-md items-stretch">
         {items.map(({ href, label, icon: Icon }) => {
@@ -38,8 +38,8 @@ export function BottomNav() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-16 flex-col items-center justify-center gap-1 text-xs font-semibold",
-                  active ? "text-primary" : "text-muted-foreground",
+                  "flex min-h-16 flex-col items-center justify-center gap-1 text-[13px] font-semibold",
+                  active ? "text-[#8b5e3c]" : "text-[#8d7768]",
                 )}
               >
                 <Icon className="size-6" aria-hidden="true" />
